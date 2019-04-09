@@ -26,13 +26,14 @@ java -jar target/api.jar
 생성한 토큰의 만료 시간은 10초인데 토큰 재발급 테스트를 위해 sing 토큰 발급 후 12초 정도의 딜레이를 준 후 토큰을 재발급하도록 테스트 코드를 작성하였다. 
 
 ###### signup 계정 생성 API 테스트
-'''
+```
 mvn test -Dtest=com.jm.test.MockRestAPITest#signupTest
-'''
+```
 
 ###### signin 로그인 및 토큰 발급 API 테스트
-'''
+```
 mvn test -Dtest=com.jm.test.MockRestAPITest#signinTest
+```
 
 ###### 토큰 재발급 API 테스트
 ```
