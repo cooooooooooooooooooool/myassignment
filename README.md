@@ -25,42 +25,42 @@ java -jar target/api.jar
 2. 테스트 전략은 웹 애플리케이션을 애플리케이션 서버에 배포하지 않고 Spring MVC 를 테스트 하도록 하였다.
 3. 생성한 토큰의 만료 시간은 10초인데 토큰 재발급 테스트를 위해 sing 토큰 발급 후 12초 정도의 딜레이를 준 후 토큰을 재발급하도록 테스트 코드를 작성하였다. 
 
-###### signup 계정 생성 API 테스트
+##### 3.2.1 signup 계정 생성 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#signupTest
 ```
 
-###### signin 로그인 및 토큰 발급 API 테스트
+##### 3.2.2 signin 로그인 및 토큰 발급 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#signinTest
 ```
 
-###### 토큰 재발급 API 테스트
+##### 3.2.3 토큰 재발급 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#tokenRefreshTest
 ```
 
-###### CSV 파일로부터 금융 기관별 데이터를 데이터베이스에 저장 API 테스트
+##### 3.2.4 CSV 파일로부터 금융 기관별 데이터를 데이터베이스에 저장 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#initBankStatusTest
 ```
 
-###### 주택금융 공급 금융기관(은행) 목록을 출력하는 API 테스트
+##### 3.2.5 주택금융 공급 금융기관(은행) 목록을 출력하는 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#getBanksTest
 ```
 
-###### 년도별 각 금융기관의 지원 금액 합계를 출력하는 API 테스트
+##### 3.2.6 년도별 각 금융기관의 지원 금액 합계를 출력하는 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#getTotalAmountListTest
 ```
 
-###### 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명을 출력하는 API 테스트
+##### 3.2.7 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명을 출력하는 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#getMaxAmountInstitueListTest
 ```
 
-###### 전체 년도(2006 ~ 2015)에서 외환은행의 지원금액 평균 중에서 가장 작은 금액과 큰 금액을 출력하는 API 테스트
+##### 3.2.8 전체 년도(2006 ~ 2015)에서 외환은행의 지원금액 평균 중에서 가장 작은 금액과 큰 금액을 출력하는 API 테스트
 ```
 mvn test -Dtest=com.jm.test.MockRestAPITest#getInstituteAvgMinMaxAmountTest
 ```
