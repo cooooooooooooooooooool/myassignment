@@ -1,6 +1,8 @@
 package com.jm.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +72,11 @@ public class InstitueController {
 	 * 각 년도별 특정 기관의 지원 금액 평균값을 조회
 	 * 
 	 * @return
+	 * @throws RuntimeException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	@GetMapping("/avg/{instituteName}")
-	public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(@PathVariable(value = "instituteName") String instituteName) {
-		return service.getInstituteAvgMinMaxAmount(instituteName);
+	public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(@PathVariable(value = "instituteName") String instituteName) throws UnsupportedEncodingException, RuntimeException {
+		return service.getInstituteAvgMinMaxAmount(URLDecoder.decode(instituteName, "UTF-8"));
 	}
 }
