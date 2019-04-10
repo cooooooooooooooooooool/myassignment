@@ -11,12 +11,12 @@ Stream API 를 활용하여 주어진 list 또는 collection 에서 최소/최�
 ## 3. 빌드 및 실행 방법
 ### 3.1 빌드
 소스 디렉토리 홈에서 다음과 같이 메이븐 명령어를 실행하여 target/api.jar 를 생성한다.
-```
+```bash
 mvn clean package -Dmaven.test.skip=true
 ```
 
 HTTP 애플리케이션 서버에서 실행하고자 하는 경우 다음의 명령어를 실행한다. context : /api, port : 8080
-```
+```bash
 java -jar target/api.jar
 ```
 
@@ -26,41 +26,41 @@ java -jar target/api.jar
 3. 생성한 토큰의 만료 시간은 10초인데 토큰 재발급 테스트를 위해 로그인 토큰 발급 후 12초 정도의 딜레이를 준 후 토큰을 재발급하도록 테스트 코드를 작성하였다. 
 
 ##### 3.2.1 signup 계정 생성 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#signupTest
 ```
 
 ##### 3.2.2 signin 로그인 및 토큰 발급 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#signinTest
 ```
 
 ##### 3.2.3 토큰 재발급 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#tokenRefreshTest
 ```
 
 ##### 3.2.4 CSV 파일로부터 금융 기관별 데이터를 데이터베이스에 저장 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#initBankStatusTest
 ```
 
 ##### 3.2.5 주택금융 공급 금융기관(은행) 목록을 출력하는 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#getBanksTest
 ```
 
 ##### 3.2.6 년도별 각 금융기관의 지원 금액 합계를 출력하는 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#getTotalAmountListTest
 ```
 
 ##### 3.2.7 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명을 출력하는 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#getMaxAmountInstitueListTest
 ```
 
 ##### 3.2.8 전체 년도(2006 ~ 2015)에서 외환은행의 지원금액 평균 중에서 가장 작은 금액과 큰 금액을 출력하는 API 테스트
-```
+```bash
 mvn test -Dtest=com.jm.test.MockRestAPITest#getInstituteAvgMinMaxAmountTest
 ```
