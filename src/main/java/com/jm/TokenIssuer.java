@@ -17,9 +17,9 @@ import com.jm.vo.AccessToken;
 
 @Component
 @PropertySource("classpath:global.properties")
-public class TokenResolver {
+public class TokenIssuer {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TokenResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(TokenIssuer.class);
 	
 	public static final String HEADER_PREFIX = "Bearer ";
 	

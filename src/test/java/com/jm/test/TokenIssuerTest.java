@@ -9,18 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.jm.TokenResolver;
+import com.jm.TokenIssuer;
 import com.jm.entity.User;
 import com.jm.vo.AccessToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TokenResolverTest {
+public class TokenIssuerTest {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TokenResolverTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(TokenIssuerTest.class);
 	
 	@Autowired
-	private TokenResolver tokenResolver;
+	private TokenIssuer tokenResolver;
 	
 	@Test
 	public void generateTokenTest() throws Exception {

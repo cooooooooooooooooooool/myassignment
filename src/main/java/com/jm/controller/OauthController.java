@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.jm.TokenResolver;
+import com.jm.TokenIssuer;
 import com.jm.entity.User;
 import com.jm.exception.AccessTokenEmptyException;
 import com.jm.exception.AccessTokenInvalidException;
@@ -36,7 +36,7 @@ public class OauthController {
 	private UserService service;
 	
 	@Autowired
-	private TokenResolver tokenResolver;
+	private TokenIssuer tokenIssuer;
 	
 	/**
 	 * 사용자 등록
@@ -46,7 +46,7 @@ public class OauthController {
 	public String signup(@RequestBody User user) throws Exception {
 		user.setPassword(DigestUtils.sha256Hex(user.getPassword()));
 		service.addUser(user);
-		AccessToken accessToken = tokenResolver.generateAuthenticateToken(user);
+		AccessToken accessToken = tokenIssuer.generateAuthenticateToken(user);
 		return accessToken.getToken();
 	}
 
@@ -66,7 +66,7 @@ public class OauthController {
 		if (!user.getPassword().equals(DigestUtils.sha256Hex(password))) throw new UserPasswordWrongException(id);
 		
 		// 토큰 발급 및 반환
-		return tokenResolver.generateAuthenticateToken(user);
+		return tokenIssuer.generateAuthenticateToken(user);
 	}
 	
 	/**
@@ -82,14 +82,14 @@ public class OauthController {
 		AccessToken accessToken = null;
 		logger.info("authorization of header : " + authorization);
 		
-		String requestAccessToken = StringUtils.removeStart(authorization, TokenResolver.HEADER_PREFIX);
+		String requestAccessToken = StringUtils.removeStart(authorization, TokenIssuer.HEADER_PREFIX);
 		
 		if (StringUtils.isEmpty(requestAccessToken)) {
 			throw new AccessTokenEmptyException("Access Token of header is empty.");
 		}
 		
 		try {
-			tokenResolver.decryptUserAccessToken(requestAccessToken);
+			tokenIssuer.decryptUserAccessToken(requestAccessToken);
 		} catch(TokenExpiredException e) {
 			
 			User user = service.getUser(id);
@@ -99,7 +99,7 @@ public class OauthController {
 			// 비밀번호 체크
 			if (!user.getPassword().equals(DigestUtils.sha256Hex(password))) throw new UserPasswordWrongException(id);
 			
-			accessToken = tokenResolver.generateAuthenticateToken(user);
+			accessToken = tokenIssuer.generateAuthenticateToken(user);
 		} catch(JWTVerificationException e) {
 			throw new AccessTokenInvalidException("Your token is invalid.");
 		}

@@ -121,7 +121,6 @@ public class InstituteService {
     		if (institueAmountList!=null && institueAmountList.size()>0) {
 	    		Map<String, Long> detailAmountMap = new HashMap<String, Long>();
 	    		for (InstituteAmountVo insAmount : institueAmountList) {
-	    			//logger.info("insAmount : " + insAmount);
 	    			detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
 	    		}
 	    		financeStat.setDetailAmount(detailAmountMap);
@@ -143,7 +142,6 @@ public class InstituteService {
     		
     		Map<String, Long> detailAmountMap = new HashMap<String, Long>();
     		for (InstituteAmountVo insAmount : institueAmountList) {
-    			//logger.info("insAmount : " + insAmount);
     			detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
     		}
     		

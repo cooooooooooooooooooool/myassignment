@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jm.TokenResolver;
+import com.jm.TokenIssuer;
 import com.jm.entity.User;
 import com.jm.vo.AccessToken;
 
@@ -121,7 +121,7 @@ public class MockRestAPITest {
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/oauth/token/refresh?id=" + user.getId() + "&password=" + user.getPassword())
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
@@ -141,7 +141,7 @@ public class MockRestAPITest {
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/banks/init")
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
@@ -157,7 +157,7 @@ public class MockRestAPITest {
 		signinTest();
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/banks")
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
@@ -177,7 +177,7 @@ public class MockRestAPITest {
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/banks/sum")
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
@@ -197,7 +197,7 @@ public class MockRestAPITest {
 				
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/banks/max")
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
@@ -220,7 +220,7 @@ public class MockRestAPITest {
 				
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/banks/avg/" + URLEncoder.encode(instituteName, "UTF-8"))
-				.header(HttpHeaders.AUTHORIZATION, TokenResolver.HEADER_PREFIX + accessToken)
+				.header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken)
 			    .contentType(MediaType.APPLICATION_JSON)
 			    .accept(MediaType.APPLICATION_JSON))
 				.andDo(print())

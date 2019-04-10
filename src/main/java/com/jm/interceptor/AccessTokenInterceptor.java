@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.jm.TokenResolver;
+import com.jm.TokenIssuer;
 import com.jm.exception.AccessTokenEmptyException;
 import com.jm.exception.AccessTokenInvalidException;
 
@@ -21,7 +21,7 @@ public class AccessTokenInterceptor extends HandlerInterceptorAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
 	
 	@Autowired
-	private TokenResolver tokenResolver;
+	private TokenIssuer tokenIssuer;
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -30,14 +30,14 @@ public class AccessTokenInterceptor extends HandlerInterceptorAdapter {
 		
 		logger.info("authorization of header : " + requestHeader);
 		
-		String requestAccessToken = StringUtils.removeStart(requestHeader, TokenResolver.HEADER_PREFIX);
+		String requestAccessToken = StringUtils.removeStart(requestHeader, TokenIssuer.HEADER_PREFIX);
 		
 		if (StringUtils.isEmpty(requestAccessToken)) {
 			throw new AccessTokenEmptyException("Access Token of header is empty.");
 		}
 		
 		try {
-			tokenResolver.decryptUserAccessToken(requestAccessToken);
+			tokenIssuer.decryptUserAccessToken(requestAccessToken);
 		} catch(TokenExpiredException e) {
 			throw new TokenExpiredException(e.getLocalizedMessage());
 		} catch(Exception e) {
