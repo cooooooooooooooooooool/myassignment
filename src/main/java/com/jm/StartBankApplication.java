@@ -89,7 +89,7 @@ public class StartBankApplication extends SpringBootServletInitializer {
 			
 			List<Institute> list = new ArrayList<>();
 			for (String key : keys) {
-				list.add(new Institute(instituteCsvHeaderMap.get(key), instituteNameMap.get(instituteCsvHeaderMap.get(key))));
+				list.add(Institute.builder().code(instituteCsvHeaderMap.get(key)).name(instituteNameMap.get(instituteCsvHeaderMap.get(key))).build());
 			}
 			
 			// 은행 코드 저장

@@ -25,9 +25,7 @@ public class TokenIssuerTest {
 	@Test
 	public void generateTokenTest() throws Exception {
 		
-		User user = new User();
-		user.setId("mytest");
-		user.setPassword(DigestUtils.sha256Hex("1234"));
+		User user = User.builder().id("mytest").password(DigestUtils.sha256Hex("1234")).build();
 		logger.info("origin user : " + user);
 		AccessToken accessToken = tokenResolver.generateAuthenticateToken(user);
 		logger.info("accessToken : " + accessToken);

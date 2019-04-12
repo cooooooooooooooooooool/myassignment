@@ -36,12 +36,7 @@ public class TokenIssuer {
                 .sign(Algorithm.HMAC256(secret));
 	    logger.info("token : " + token);
 	    
-	    AccessToken accessToken = new AccessToken();
-	    accessToken.setType("BEARER");
-		accessToken.setToken(token);
-		accessToken.setIssueDate(issueDate);
-		accessToken.setExpireDate(expireDate);
-	    return accessToken;
+	    return AccessToken.builder().type("BEARER").token(token).issueDate(issueDate).expireDate(expireDate).build();
 	}
 	
 	public String decryptUserAccessToken(String accessToken) throws JWTVerificationException {

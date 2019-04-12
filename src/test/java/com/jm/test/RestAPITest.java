@@ -48,7 +48,7 @@ public class RestAPITest {
 	
 	@Before
 	public void setUp() {
-		this.user = new User("test02", "1234");
+		this.user = User.builder().id("test02").password("1234").build();
 	}
 	
 	private void signin() {
@@ -95,11 +95,11 @@ public class RestAPITest {
 	@Test
 	public void tokenRefreshTest() throws InterruptedException {
 		
-		logger.info("signin and token generate!");
+		logger.info("Signin and token generate!");
 		signin();
 		
-		logger.info("waiting 12 seconds for token expire ...");
-		Thread.sleep(12000);
+		logger.info("Waiting 65 seconds for token expire ...");
+		Thread.sleep(1000*65);
 		
 		// 만료된 토큰으로 토큰 재발급 요청
 		ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth/token/refresh?id={id}&password={password}", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<AccessToken>() {}, user.getId(), user.getPassword());

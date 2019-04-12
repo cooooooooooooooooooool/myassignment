@@ -12,9 +12,18 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
 @Entity
 @IdClass(FinanceStatusId.class)
 @Table(name = "financeStatus")
+@NoArgsConstructor
+@AllArgsConstructor
 public class FinanceStatus {
 
 	@Id
@@ -33,93 +42,4 @@ public class FinanceStatus {
             @JoinColumn(name = "code", updatable = false, insertable = false)
     }, foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private Institute institute;
-    
-    public FinanceStatus() {}
-
-	public FinanceStatus(int year, int month, String code, long amount) {
-		this.year = year;
-		this.month = month;
-		this.code = code;
-		this.amount = amount;
-	}
-
-	/**
-	 * @return the year
-	 */
-	public int getYear() {
-		return year;
-	}
-
-	/**
-	 * @param year the year to set
-	 */
-	public void setYear(int year) {
-		this.year = year;
-	}
-
-	/**
-	 * @return the month
-	 */
-	public int getMonth() {
-		return month;
-	}
-
-	/**
-	 * @param month the month to set
-	 */
-	public void setMonth(int month) {
-		this.month = month;
-	}
-
-	/**
-	 * @return the code
-	 */
-	public String getCode() {
-		return code;
-	}
-
-	/**
-	 * @param code the code to set
-	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	/**
-	 * @return the amount
-	 */
-	public long getAmount() {
-		return amount;
-	}
-
-	/**
-	 * @param amount the amount to set
-	 */
-	public void setAmount(long amount) {
-		this.amount = amount;
-	}
-
-	/**
-	 * @return the institute
-	 */
-	public Institute getInstitute() {
-		return institute;
-	}
-
-	/**
-	 * @param institute the institute to set
-	 */
-	public void setInstitute(Institute institute) {
-		this.institute = institute;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("FinanceStatus [year=").append(year).append(", month=").append(month).append(", code=").append(code).append(", amount=").append(amount).append(", institute=").append(institute).append("]");
-		return builder.toString();
-	}
 }

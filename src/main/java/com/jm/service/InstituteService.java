@@ -62,7 +62,7 @@ public class InstituteService {
 		
 		List<Institute> list = new ArrayList<>();
 		for (String key : keys) {
-			list.add(new Institute(instituteNameMap.get(instituteCsvHeaderMap.get(key)), instituteCsvHeaderMap.get(key)));
+			list.add(Institute.builder().code(instituteNameMap.get(instituteCsvHeaderMap.get(key))).name(instituteCsvHeaderMap.get(key)).build());
 		}
     	
     	// CSV 로부터 데이터 초기화
@@ -86,7 +86,7 @@ public class InstituteService {
 		            for (String key : keys) {
 		            	logger.info(csvRecord.get(key));
 		            	logger.info(instituteCsvHeaderMap.get(key));
-		            	financeList.add(new FinanceStatus(year, month, instituteCsvHeaderMap.get(key), Long.parseLong(csvRecord.get(key).replaceAll(",", ""))));
+		            	financeList.add(FinanceStatus.builder().year(year).month(month).code(instituteCsvHeaderMap.get(key)).amount(Long.parseLong(csvRecord.get(key).replaceAll(",", ""))).build());
 					}
 				}
 	        }
@@ -203,6 +203,6 @@ public class InstituteService {
 		
 		logger.info("minMaxList : " + minMaxList);
 		
-		return new InstituteAvgMinMaxAmountVo(instituteName, minMaxList);
+		return InstituteAvgMinMaxAmountVo.builder().instituteName(instituteName).supportAmount(minMaxList).build();
     }
 }
