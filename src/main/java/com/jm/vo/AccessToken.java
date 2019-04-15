@@ -15,7 +15,7 @@ public class AccessToken {
 
 	//public static final int expireTime = 1000*60*60*2; // 2 hour
 	
-	public static final int expireTime = 1000*60; //10 seconds
+	public static final int expireTime = 1000*60; //60 seconds
 	
 	public static final String secret = "mytoken";
 	

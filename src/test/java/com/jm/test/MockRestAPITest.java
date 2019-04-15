@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.net.URLEncoder;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,6 +34,9 @@ import com.jm.vo.AccessToken;
 public class MockRestAPITest {
 
 	private static final Logger logger = LoggerFactory.getLogger(MockRestAPITest.class);
+	
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 
 	private User user;
 	
@@ -99,6 +104,19 @@ public class MockRestAPITest {
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
+		/*
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+				.get("/oauth?id=" + user.getId() + "&password=" + user.getPassword())
+				.content(asJsonString(user))
+			    .contentType(MediaType.APPLICATION_JSON)
+			    .accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andDo(document("signin", 
+						requestFields(fieldWithPath("id").description("로그인 사용자 ID 입력"), 
+						fieldWithPath("password").description("비밀번호 입력"))))
+				.andExpect(status().isOk())
+				.andReturn();
+		*/
 		
 		AccessToken token = toAccessToken(result.getResponse().getContentAsString());
 		this.accessToken = token.getToken();
@@ -116,8 +134,8 @@ public class MockRestAPITest {
 		
 		signinTest();
 		
-		logger.info("waiting 12 seconds for token expire ...");
-		Thread.sleep(12000);
+		logger.info("waiting 62 seconds for token expire ...");
+		Thread.sleep(1000*60+2*1000);
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/oauth/token/refresh?id=" + user.getId() + "&password=" + user.getPassword())
