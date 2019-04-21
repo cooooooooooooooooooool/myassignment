@@ -4,8 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -15,10 +13,11 @@ import com.jm.TokenIssuer;
 import com.jm.exception.AccessTokenEmptyException;
 import com.jm.exception.AccessTokenInvalidException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class AccessTokenInterceptor extends HandlerInterceptorAdapter {
-	
-	private static final Logger logger = LoggerFactory.getLogger(AccessTokenInterceptor.class);
 	
 	@Autowired
 	private TokenIssuer tokenIssuer;
@@ -28,7 +27,7 @@ public class AccessTokenInterceptor extends HandlerInterceptorAdapter {
 		
 		String requestHeader = StringUtils.defaultString(request.getHeader("authorization"));
 		
-		logger.info("authorization of header : " + requestHeader);
+		log.info("authorization of header : " + requestHeader);
 		
 		String requestAccessToken = StringUtils.removeStart(requestHeader, TokenIssuer.HEADER_PREFIX);
 		

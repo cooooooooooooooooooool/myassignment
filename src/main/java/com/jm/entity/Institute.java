@@ -21,7 +21,4 @@ public class Institute {
     private String code;
     
     private String name;
-    
-    //@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "institute")
-    //List<FinanceStatus> financeStatusList;
 }

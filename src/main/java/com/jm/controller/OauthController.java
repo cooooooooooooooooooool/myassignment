@@ -2,8 +2,6 @@ package com.jm.controller;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +23,13 @@ import com.jm.exception.UserPasswordWrongException;
 import com.jm.service.UserService;
 import com.jm.vo.AccessToken;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping(value = "/oauth")
 public class OauthController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(OauthController.class);
 	
 	@Autowired
 	private UserService service;
@@ -80,7 +79,7 @@ public class OauthController {
 			@RequestParam(value="password", required=true) String password) throws Exception {
 		
 		AccessToken accessToken = null;
-		logger.info("authorization of header : " + authorization);
+		log.info("authorization of header : " + authorization);
 		
 		String requestAccessToken = StringUtils.removeStart(authorization, TokenIssuer.HEADER_PREFIX);
 		

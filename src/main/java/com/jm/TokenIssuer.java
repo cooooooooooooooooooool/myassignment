@@ -2,8 +2,6 @@ package com.jm;
 
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -15,11 +13,12 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.jm.entity.User;
 import com.jm.vo.AccessToken;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 @PropertySource("classpath:global.properties")
 public class TokenIssuer {
-	
-	private static final Logger logger = LoggerFactory.getLogger(TokenIssuer.class);
 	
 	public static final String HEADER_PREFIX = "Bearer ";
 	
@@ -34,7 +33,7 @@ public class TokenIssuer {
                 .withSubject(user.getId())
                 .withExpiresAt(expireDate)
                 .sign(Algorithm.HMAC256(secret));
-	    logger.info("token : " + token);
+	    log.info("token : " + token);
 	    
 	    return AccessToken.builder().type("BEARER").token(token).issueDate(issueDate).expireDate(expireDate).build();
 	}
@@ -44,7 +43,7 @@ public class TokenIssuer {
                 .build()
                 .verify(accessToken)
                 .getSubject();
-		logger.info("userId : " + userId);
+		log.info("userId : " + userId);
 		return userId;
 	}
 }
