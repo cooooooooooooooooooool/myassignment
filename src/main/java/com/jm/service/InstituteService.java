@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -118,7 +118,7 @@ public class InstituteService {
     		List<InstituteAmountVo> institueAmountList = financeStatusRepository.getInstituteAmountList(financeStat.getYear());
     		
     		if (institueAmountList!=null && institueAmountList.size()>0) {
-	    		Map<String, Long> detailAmountMap = new HashMap<String, Long>();
+	    		Map<String, Long> detailAmountMap = new HashMap<>();
 	    		for (InstituteAmountVo insAmount : institueAmountList) {
 	    			detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
 	    		}
@@ -139,11 +139,14 @@ public class InstituteService {
     	for (FinanceStatVo financeStat : list) {
     		List<InstituteAmountVo> institueAmountList = financeStatusRepository.getInstituteAmountList(financeStat.getYear());
     		
-    		// 년도별 최대값
-    		InstituteAmountVo maxAmount = institueAmountList.stream().max(Comparator.comparingLong(InstituteAmountVo::getTotalAmount)).get();
-    		log.info("max : " + maxAmount);
- 
-    		financeStat.setInstituteName(maxAmount.getInstituteName());
+    		Map<String, Long> detailAmountMap = new HashMap<>();
+    		for (InstituteAmountVo insAmount : institueAmountList) {
+    			detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
+    		}
+    		
+    		String key = Collections.max(detailAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+    		log.info("key : " + key + ", value : " + detailAmountMap.get(key));
+    		financeStat.setInstituteName(key);
     	}
     	return list;
     }
@@ -167,7 +170,7 @@ public class InstituteService {
     /**
 	 * 각 년도별 특정 기관의 지원 금액 평균값을 조회
 	 */
-    @SuppressWarnings("serial")
+	@SuppressWarnings("serial")
 	@Transactional(readOnly=true)
     public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(String instituteName) throws RuntimeException {
     	
@@ -176,23 +179,26 @@ public class InstituteService {
     	if (institute == null) throw new InstituteNotFoundException(instituteName);
     	
     	List<InstituteAvgAmountVo> list = financeStatusRepository.getInstituteAvgAmountList(institute.getCode());
+    	
+    	Map<Integer, Long> avgAmountMap = new HashMap<>();
+		for (InstituteAvgAmountVo insAmount : list) {
+			avgAmountMap.put(insAmount.getYear(), insAmount.getAvgAmount());
+		}
 		
-		// 평균의 최소값
-		InstituteAvgAmountVo minAvgAmount = list.stream().min(Comparator.comparingLong(InstituteAvgAmountVo::getAvgAmount)).get();
-		log.info("min : " + minAvgAmount);
+		// 평균의 최소값 키
+		int minKey = Collections.min(avgAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
 		
-		// 평균의 최대값
-		InstituteAvgAmountVo maxAvgAmount = list.stream().max(Comparator.comparingLong(InstituteAvgAmountVo::getAvgAmount)).get();
-		log.info("max : " + maxAvgAmount);
+		// 평균의 최대값 키
+		int maxKey = Collections.max(avgAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
 		
 		List<Map<Integer, Long>> minMaxList = new ArrayList<>();
 		
 		minMaxList.add(new HashMap<Integer, Long>() {{
-		    put(minAvgAmount.getYear(), minAvgAmount.getAvgAmount());
+		    put(minKey, avgAmountMap.get(minKey));
 		}});
 		
 		minMaxList.add(new HashMap<Integer, Long>() {{
-		    put(maxAvgAmount.getYear(), maxAvgAmount.getAvgAmount());
+		    put(maxKey, avgAmountMap.get(maxKey));
 		}});
 		
 		log.info("minMaxList : " + minMaxList);
