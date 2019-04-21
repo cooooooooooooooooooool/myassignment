@@ -16,20 +16,16 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import com.jm.entity.Institute;
 import com.jm.service.InstituteService;
 
-@EnableScheduling
 @ServletComponentScan
 @SpringBootApplication
 public class StartBankApplication extends SpringBootServletInitializer {
 	
-	@Bean 
+	@Bean
 	public ServletWebServerFactory servletWebServerFactory(){
 		return new TomcatServletWebServerFactory();
 	}
@@ -39,10 +35,12 @@ public class StartBankApplication extends SpringBootServletInitializer {
 		return new RestTemplate();
 	}
 
+	/*
 	@Bean
 	public TaskScheduler taskScheduler() {
 		return new ConcurrentTaskScheduler();
 	}
+	*/
 	
 	@Bean
 	@Qualifier("instituteCsvHeaderMap")

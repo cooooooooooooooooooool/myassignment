@@ -6,6 +6,7 @@
 	<name>Spring Boot Rest API</name>
 	<packaging>jar</packaging>
 	
+	<!-- 
 	<repositories>
         <repository>
             <id>poscoict-repository</id>
@@ -22,7 +23,7 @@
             <name>poscoict-repository</name>
             <url>http://192.168.193.100:8081/nexus/content/groups/public</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories> -->
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -66,7 +67,7 @@
 			<plugin> 
 			    <groupId>org.asciidoctor</groupId>
 			    <artifactId>asciidoctor-maven-plugin</artifactId>
-			    <version>1.6.0</version>
+			    <version>1.5.8</version>
 			    <executions>
 			        <execution>
 			            <id>generate-docs</id>
@@ -211,6 +212,12 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+		    <groupId>org.asciidoctor</groupId>
+		    <artifactId>asciidoctor-maven-plugin</artifactId>
+		    <version>1.5.8</version>
+		</dependency>
 
 	</dependencies>
 </project>
