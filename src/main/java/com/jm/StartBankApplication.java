@@ -26,7 +26,7 @@ import com.jm.service.InstituteService;
 public class StartBankApplication extends SpringBootServletInitializer {
 	
 	@Bean
-	public ServletWebServerFactory servletWebServerFactory(){
+	public ServletWebServerFactory servletWebServerFactory() {
 		return new TomcatServletWebServerFactory();
 	}
 
