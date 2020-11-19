@@ -1,10 +1,10 @@
-package com.jm.repository;
+package com.jm.model.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jm.entity.Institute;
+import com.jm.model.entity.Institute;
 
 public interface InstituteRepository extends JpaRepository<Institute, String> {
-	
-	public Institute findOneByName(String instituteName);
+
+    public Institute findOneByName(String instituteName);
 }

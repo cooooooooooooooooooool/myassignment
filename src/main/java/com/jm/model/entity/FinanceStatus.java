@@ -1,4 +1,4 @@
-package com.jm.entity;
+package com.jm.model.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ConstraintMode;
