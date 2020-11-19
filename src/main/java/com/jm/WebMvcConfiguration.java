@@ -9,14 +9,16 @@ import com.jm.interceptor.AccessTokenInterceptor;
 
 @Component
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
-	
-	@Autowired
-	private AccessTokenInterceptor accessTokenInterceptor;
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
+    @Autowired
+    private AccessTokenInterceptor accessTokenInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        /* @formatter:off */
 		registry.addInterceptor(accessTokenInterceptor)
-		.addPathPatterns("/**/*")
-		.excludePathPatterns("/oauth/**");
-	}
+		        .addPathPatterns("/**/*")
+		        .excludePathPatterns("/oauth/**");
+		/* @formatter:on */
+    }
 }

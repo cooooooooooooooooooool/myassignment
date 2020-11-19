@@ -13,7 +13,7 @@ public class TokenGenerator {
 
         Random rnd = new Random(System.nanoTime());
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         for (int i = 0; i < 3; i++) {
             int randNum = (int) rnd.nextInt(126);
@@ -28,7 +28,7 @@ public class TokenGenerator {
 
     public static void main(String[] args) {
         try {
-            Map<String, Integer> map = new HashMap<String, Integer>();
+            Map<String, Integer> map = new HashMap<>();
             for (int i = 0; i < 1000; i++) {
                 String token = TokenGenerator.generateToken();
                 Thread.sleep(10);
@@ -50,6 +50,7 @@ public class TokenGenerator {
 
             System.out.println("count: " + count);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (UnsupportedEncodingException e) {
         }
     }
