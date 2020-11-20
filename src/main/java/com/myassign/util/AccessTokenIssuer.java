@@ -1,10 +1,8 @@
-package com.myassign;
+package com.myassign.util;
 
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,17 +11,17 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.myassign.model.dto.AccessToken;
 import com.myassign.model.entity.User;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
-@PropertySource("classpath:global.properties")
-public class TokenIssuer {
+@UtilityClass
+public class AccessTokenIssuer {
 
     public static final String HEADER_PREFIX = "Bearer ";
 
     @Value("${secret}")
-    private String secret;
+    private static final String secret = "myscret";
 
     public AccessToken generateAuthenticateToken(User user) throws JWTCreationException {
         Date issueDate = new Date(System.currentTimeMillis());

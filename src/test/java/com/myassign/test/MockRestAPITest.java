@@ -3,7 +3,7 @@ package com.myassign.test;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.net.URLEncoder;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +20,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.myassign.TokenIssuer;
 import com.myassign.model.dto.AccessToken;
-import com.myassign.model.entity.User;
+import com.myassign.util.AccessTokenIssuer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,21 +31,24 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MockRestAPITest {
 
-    private User user;
-
     private String accessToken;
+
+    private UUID roomId;
 
     @Autowired
     private MockMvc mock;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         /* @formatter:off */
-        this.user = User.builder()
-                        .id("test02")
-                        .password("1234")
-                        .build();
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/room").contentType(MediaType.APPLICATION_JSON)
+                                                                           .accept(MediaType.APPLICATION_JSON))
+                                                              .andDo(print())
+                                                              .andExpect(status().isOk())
+                                                              .andReturn();
         /* @formatter:off */
+        
+        this.roomId = UUID.fromString(result.getResponse().getContentAsString());
         log.info("RestAPITest's setup is done...");
     }
 
@@ -69,122 +71,53 @@ public class MockRestAPITest {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * 사용자 등록 테스트
-     */
+    
     @Test
-    public void signupTest() throws Exception {
+    public void sprayTest() throws Exception {
+        
+        String userId = "user-0";
+        String password = "1234";
+        int targetPrice = 3247;
+        int targetCount = 3;
+        
+        // 인증 처리
+        login(userId, password);
+
         /* @formatter:off */
-        mock.perform(MockMvcRequestBuilders.post("/oauth").content(asJsonString(user))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)).andDo(print())
-                                                .andExpect(status().isOk());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, AccessTokenIssuer.HEADER_PREFIX + accessToken);
+        headers.add("X-USER-ID", userId);
+        headers.add("X-ROOM-ID", roomId.toString());
+        MvcResult result = mock.perform(MockMvcRequestBuilders.post("/spray").headers(headers)
+                                                                             .contentType(MediaType.APPLICATION_JSON)
+                                                                             .accept(MediaType.APPLICATION_JSON)
+                                                                             .param("totalPrice", Integer.toString(targetPrice))
+                                                                             .param("userCount", Integer.toString(targetCount)))
+                                                              .andDo(print())
+                                                              .andExpect(status().isOk())
+                                                              .andReturn();
         /* @formatter:on */
+        String token = result.getResponse().getContentAsString();
+        log.info("transaction token : {}", token);
     }
 
     /**
-     * 사용자 인증 및 토큰 발급 테스트
+     * 사용자 인증 테스트
      */
-    @Test
-    public void signinTest() throws Exception {
+    private void login(String userId, String password) throws Exception {
 
-        // 사용자 등록
-        signupTest();
-
-        // 사용자 인증 및 토큰 발급 테스트
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/oauth?id=" + user.getId() + "&password=" + user.getPassword()).content(asJsonString(user)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk()).andReturn();
-
+        /* @formatter:off */
+        MvcResult result = mock.perform(MockMvcRequestBuilders.post("/sign").header(HttpHeaders.AUTHORIZATION, AccessTokenIssuer.HEADER_PREFIX + accessToken)
+                                                                            .contentType(MediaType.APPLICATION_JSON)
+                                                                            .accept(MediaType.APPLICATION_JSON)
+                                                                            .param("userId", userId)
+                                                                            .param("password", password))
+                                                              .andDo(print())
+                                                              .andExpect(status().isOk())
+                                                              .andReturn();
+        /* @formatter:on */
         AccessToken token = toAccessToken(result.getResponse().getContentAsString());
+        log.info("accessToken : {}", token);
         this.accessToken = token.getToken();
-    }
-
-    /**
-     * 토큰 재발급
-     * 
-     * @throws InterruptedException
-     */
-    @Test
-    public void tokenRefreshTest() throws Exception {
-
-        // 사용자 등록
-        signupTest();
-
-        signinTest();
-
-        log.info("waiting 62 seconds for token expire ...");
-        Thread.sleep(1000 * 60 + 2 * 1000);
-
-        mock.perform(MockMvcRequestBuilders.get("/oauth/token/refresh?id=" + user.getId() + "&password=" + user.getPassword()).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
-    }
-
-    /**
-     * 금융 기관별 데이터 초기화 테스트
-     * 
-     * @throws InterruptedException
-     */
-    @Test
-    public void initBankStatusTest() throws Exception {
-
-        // 사용자 등록
-        signupTest();
-        signinTest();
-
-        mock.perform(MockMvcRequestBuilders.post("/banks/init").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
-    }
-
-    /**
-     * 전체 은행 코드 목록을 조회 테스트
-     */
-    @Test
-    public void getBanksTest() throws Exception {
-        signupTest();
-        signinTest();
-        mock.perform(MockMvcRequestBuilders.get("/banks").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
-    }
-
-    /**
-     * 연도별 지원 금액 합계 조회 테스트
-     */
-    @Test
-    public void getTotalAmountListTest() throws Exception {
-        signupTest();
-        signinTest();
-
-        // csv 데이터 초기화
-        initBankStatusTest();
-
-        mock.perform(MockMvcRequestBuilders.get("/banks/sum").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
-    }
-
-    /**
-     * 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명 조회 테스트
-     */
-    @Test
-    public void getMaxAmountInstitueListTest() throws Exception {
-        signupTest();
-        signinTest();
-
-        // csv 데이터 초기화
-        initBankStatusTest();
-
-        mock.perform(MockMvcRequestBuilders.get("/banks/max").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
-    }
-
-    /**
-     * 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명 조회 테스트
-     */
-    @Test
-    public void getInstituteAvgMinMaxAmountTest() throws Exception {
-
-        String instituteName = "외환은행";
-
-        signupTest();
-        signinTest();
-
-        // csv 데이터 초기화
-        initBankStatusTest();
-
-        mock.perform(MockMvcRequestBuilders.get("/banks/avg/" + URLEncoder.encode(instituteName, "UTF-8")).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 }

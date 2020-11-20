@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,22 +21,23 @@ import lombok.ToString;
 @Entity
 @Builder
 @ToString
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
 public class User {
 
     @Id
-    @Column(name = "user_id", columnDefinition = "varchar(128)")
+    @Column(name = "user_id", columnDefinition = "VARCHAR", length = 128)
     private String id;
 
-    @Column(name = "user_name", columnDefinition = "varchar(256)")
+    @Column(name = "user_name", columnDefinition = "VARCHAR", length = 128)
     private String name;
 
-    @Column(name = "password", columnDefinition = "varchar(512)")
+    @Column(name = "password", columnDefinition = "VARCHAR", length = 512)
     private String password;
 
-    @Column(name = "balance", columnDefinition = "bigint(20)")
+    @Column(name = "balance", columnDefinition = "BIGINT", length = 20)
     private Long balance;
 
     @OneToMany(mappedBy = "user")

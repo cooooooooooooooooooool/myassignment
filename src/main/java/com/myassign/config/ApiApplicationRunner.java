@@ -1,30 +1,17 @@
-/*===================================================================================
- *                    Copyright(c) 2019 POSCO ICT
- *
- * Project            : workcenter-api
- * Source File Name   : com.aworks.workcenter.api.auth.OauthClientDetailsLoader.java
- * Description        :
- * Author             : ddurung
- * Version            : 1.0.0
- * File Name related  :
- * Class Name related :
- * Created Date       : 2019. 10. 31.
- * Updated Date       : 2019. 10. 31.
- * Last modifier      : ddurung
- * Updated content    : 최초작성
- *
- *==================================================================================*/
 package com.myassign.config;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import com.myassign.model.entity.Room;
 import com.myassign.model.entity.User;
+import com.myassign.service.RoomService;
 import com.myassign.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,24 +23,34 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiApplicationRunner implements ApplicationRunner {
 
     private final UserService userService;
+    private final RoomService roomService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        /* @formatter:off */
         List<User> list = new ArrayList<>();
-        
-        for (int i=0; i<5; i++) {
+
+        for (int i = 0; i < 5; i++) {
+            /* @formatter:off */
             User user = User.builder()
                             .id("user-"+i)
-                            .name("사용자"+i)
+                            .name("전우치"+i)
+                            .password(DigestUtils.sha256Hex("1234"))
                             .balance(Long.valueOf(Integer.MAX_VALUE))
                             .createDate(new Date()).build();
+            /* @formatter:on */
             log.info("user : " + user);
             list.add(user);
         }
-        
+
         userService.createUser(list);
-        /* @formatter:on */
+
+        Room room = roomService.createRoom("my chatting room");
+
+        if (list != null && !list.isEmpty()) {
+            list.forEach(user -> {
+                roomService.joinRoomUser(room.getId(), user.getId());
+            });
+        }
     }
 }

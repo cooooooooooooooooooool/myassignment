@@ -20,11 +20,8 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
         /* @formatter:off */
 		registry.addInterceptor(accessTokenInterceptor)
 				.addPathPatterns("/**/*")
-				.excludePathPatterns("/expired")
-				.excludePathPatterns("/login", "/login/action", "/webconsole/altCode/ref", "/webconsole/dialog/images/*", "/webskin/**/*")
-				.excludePathPatterns("/portal/**")
-				.excludePathPatterns("/css/**", "/font/**", "/dev/**", "/img/**", "/js/**", "/images/**")
-				.excludePathPatterns("/csrf", "/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**", "/configuration/ui", "/configuration/security");
+				.excludePathPatterns("/sign")
+				.excludePathPatterns("/room");
 		/* @formatter:off */
 	}
 }

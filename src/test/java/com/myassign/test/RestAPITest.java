@@ -27,8 +27,8 @@ import com.myassign.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public class RestAPITest {
 
     @Autowired

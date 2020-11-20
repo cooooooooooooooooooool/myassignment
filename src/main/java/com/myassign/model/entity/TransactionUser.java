@@ -12,23 +12,24 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Entity
 @Builder
-@ToString
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "transaction_user", uniqueConstraints = @UniqueConstraint(columnNames = { "transaction_id", "user_id" }))
+@Table(name = "transaction_user", uniqueConstraints = @UniqueConstraint(columnNames = { "transaction_id", "receive_user" }))
 public class TransactionUser {
 
     @Id
-    @Column(name = "id", columnDefinition = "bigint(20)")
+    @Column(name = "id", columnDefinition = "BIGINT", length = 20)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -36,16 +37,30 @@ public class TransactionUser {
     @JoinColumn(name = "transaction_id")
     private Transaction transaction;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "receive_user", columnDefinition = "VARCHAR", length = 128)
+    private String receiveUserId;
 
-    @Column(name = "price", columnDefinition = "bigint(20)")
+    @Column(name = "order", columnDefinition = "INT", length = 8, nullable = false)
+    private Integer order;
+
+    @Column(name = "price", columnDefinition = "BIGINT", length = 20)
     private Long price;
-
-    @Column(name = "send_date", updatable = false)
-    private Date sendDate;
 
     @Column(name = "receive_date")
     private Date receiveDate;
+
+    @Column(name = "create_date")
+    private Date createDate;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TransactionUser [id=").append(id).append(", transaction=").append(transaction).append(", receiveUserId=").append(receiveUserId).append(", order=").append(order).append(", price=").append(price).append(", receiveDate=").append(receiveDate).append(", createDate=").append(createDate).append("]");
+        return builder.toString();
+    }
 }

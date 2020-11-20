@@ -22,12 +22,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Entity
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "transaction", uniqueConstraints = @UniqueConstraint(columnNames = { "room_id", "token" }))
@@ -37,21 +35,21 @@ public class Transaction {
     @Type(type = "uuid-char")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "com.myassign.model.UUIDTimebaseGenerator")
-    @Column(name = "transaction_id", columnDefinition = "char(36)")
+    @Column(name = "transaction_id", columnDefinition = "CHAR", length = 36)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
     private Room room;
 
-    @Column(name = "token", columnDefinition = "char(3)", nullable = false)
+    @Column(name = "token", columnDefinition = "CHAR", length = 3, nullable = false)
     private String token;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "send_user", referencedColumnName = "user_id", nullable = false)
-    private User sendUser;
+    @JoinColumn(name = "spread_user", referencedColumnName = "user_id", nullable = false)
+    private User spreadUser;
 
-    @Column(name = "total_price", columnDefinition = "bigint(20)", nullable = false)
+    @Column(name = "total_price", columnDefinition = "BIGINT", length = 20, nullable = false)
     private Long totalPrice;
 
     @OneToMany(mappedBy = "transaction")
@@ -59,4 +57,16 @@ public class Transaction {
 
     @Column(name = "create_date", updatable = false)
     private Date createDate;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Transaction [id=").append(id).append(", room=").append(room).append(", token=").append(token).append(", spreadUser=").append(spreadUser).append(", totalPrice=").append(totalPrice).append(", createDate=").append(createDate).append("]");
+        return builder.toString();
+    }
 }

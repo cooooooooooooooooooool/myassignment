@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -18,12 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Entity
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "room")
@@ -33,15 +32,28 @@ public class Room {
     @Type(type = "uuid-char")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "com.myassign.model.UUIDTimebaseGenerator")
-    @Column(name = "room_id", columnDefinition = "char(36)")
+    @Column(name = "room_id", columnDefinition = "CHAR", length = 36)
     private UUID id;
 
-    @Column(name = "room_name", columnDefinition = "varchar(256)")
+    @Column(name = "room_name", columnDefinition = "VARCHAR", length = 255)
     private String name;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<RoomUser> roomUserList;
 
-    @Column(name = "create_datetime", updatable = false)
-    private Date createDatetime;
+    @Column(name = "create_date", updatable = false)
+    private Date createDate;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Room [id=").append(id).append(", name=").append(name).append(", createDate=").append(createDate).append("]");
+        return builder.toString();
+    }
+
 }

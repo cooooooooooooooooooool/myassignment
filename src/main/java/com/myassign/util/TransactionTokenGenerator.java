@@ -8,9 +8,11 @@ import java.util.Map;
 import java.util.Random;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @UtilityClass
-public class TokenGenerator {
+public class TransactionTokenGenerator {
 
     public static String generateToken() {
 
@@ -19,13 +21,13 @@ public class TokenGenerator {
         StringBuilder buf = new StringBuilder();
 
         for (int i = 0; i < 3; i++) {
-            int randNum = (int) rnd.nextInt(126);
+            int randNum = rnd.nextInt(126);
             if (randNum < 33)
                 randNum += 33;
-            System.out.println("randNum : " + randNum);
             buf.append((char) randNum);
         }
 
+        log.info("generated token : " + buf);
         return buf.toString();
     }
 
@@ -33,7 +35,7 @@ public class TokenGenerator {
         try {
             Map<String, Integer> map = new HashMap<>();
             for (int i = 0; i < 1000; i++) {
-                String token = TokenGenerator.generateToken();
+                String token = TransactionTokenGenerator.generateToken();
                 Thread.sleep(10);
                 map.put(token, map.get(token) != null ? map.get(token) + 1 : 0);
             }
@@ -42,12 +44,12 @@ public class TokenGenerator {
             Iterator<String> keys = map.keySet().iterator();
             while (keys.hasNext()) {
 
-                String key = keys.next();
-                System.out.println("token : " + new String(Base64.getDecoder().decode(Base64.getEncoder().encodeToString(key.getBytes("UTF-8")))));
-                int value = map.get(key);
+                String token = keys.next();
+                log.info("token : " + new String(Base64.getDecoder().decode(Base64.getEncoder().encodeToString(token.getBytes("UTF-8")))));
+                int value = map.get(token);
                 if (value > 0) {
                     ++count;
-                    System.out.println("key : " + key.getBytes("UTF-8") + ", value : " + map.get(key));
+                    log.info("key : " + token.getBytes("UTF-8") + ", value : " + map.get(token));
                 }
             }
 
