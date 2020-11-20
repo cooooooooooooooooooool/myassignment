@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,27 +21,24 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.myassign.exception.InstituteNotFoundException;
 import com.myassign.model.dto.FinanceStatVo;
-import com.myassign.model.dto.InstituteAmountVo;
-import com.myassign.model.dto.InstituteAvgAmountVo;
 import com.myassign.model.dto.InstituteAvgMinMaxAmountVo;
 import com.myassign.model.entity.FinanceStatus;
 import com.myassign.model.entity.Institute;
 import com.myassign.model.repository.FinanceStatusRepository;
 import com.myassign.model.repository.InstituteRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class InstituteService {
 
-    @Autowired
-    private InstituteRepository instituteRepository;
+    private final InstituteRepository instituteRepository;
 
-    @Autowired
-    private FinanceStatusRepository financeStatusRepository;
+    private final FinanceStatusRepository financeStatusRepository;
 
     @Autowired
     @Qualifier("instituteCsvHeaderMap")
@@ -109,20 +104,21 @@ public class InstituteService {
      */
     @Transactional(readOnly = true)
     public List<FinanceStatVo> getTotalAmountList() throws RuntimeException {
-        List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
-
-        for (FinanceStatVo financeStat : list) {
-            List<InstituteAmountVo> institueAmountList = financeStatusRepository.getInstituteAmountList(financeStat.getYear());
-
-            if (institueAmountList != null && institueAmountList.size() > 0) {
-                Map<String, Long> detailAmountMap = new HashMap<>();
-                for (InstituteAmountVo insAmount : institueAmountList) {
-                    detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
-                }
-                financeStat.setDetailAmount(detailAmountMap);
-            }
-        }
-        return list;
+        /*
+         * List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
+         * 
+         * for (FinanceStatVo financeStat : list) { List<InstituteAmountVo>
+         * institueAmountList =
+         * financeStatusRepository.getInstituteAmountList(financeStat.getYear());
+         * 
+         * if (institueAmountList != null && institueAmountList.size() > 0) {
+         * Map<String, Long> detailAmountMap = new HashMap<>(); for (InstituteAmountVo
+         * insAmount : institueAmountList) {
+         * detailAmountMap.put(insAmount.getInstituteName(),
+         * insAmount.getTotalAmount()); } financeStat.setDetailAmount(detailAmountMap);
+         * } }
+         */
+        return null;
     }
 
     /**
@@ -130,22 +126,24 @@ public class InstituteService {
      */
     @Transactional(readOnly = true)
     public List<FinanceStatVo> getMaxAmountInstitueList() throws RuntimeException {
-
-        List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
-
-        for (FinanceStatVo financeStat : list) {
-            List<InstituteAmountVo> institueAmountList = financeStatusRepository.getInstituteAmountList(financeStat.getYear());
-
-            Map<String, Long> detailAmountMap = new HashMap<>();
-            for (InstituteAmountVo insAmount : institueAmountList) {
-                detailAmountMap.put(insAmount.getInstituteName(), insAmount.getTotalAmount());
-            }
-
-            String key = Collections.max(detailAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-            log.info("key : " + key + ", value : " + detailAmountMap.get(key));
-            financeStat.setInstituteName(key);
-        }
-        return list;
+        /*
+         * List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
+         * 
+         * for (FinanceStatVo financeStat : list) { List<InstituteAmountVo>
+         * institueAmountList =
+         * financeStatusRepository.getInstituteAmountList(financeStat.getYear());
+         * 
+         * Map<String, Long> detailAmountMap = new HashMap<>(); for (InstituteAmountVo
+         * insAmount : institueAmountList) {
+         * detailAmountMap.put(insAmount.getInstituteName(),
+         * insAmount.getTotalAmount()); }
+         * 
+         * String key = Collections.max(detailAmountMap.entrySet(),
+         * Map.Entry.comparingByValue()).getKey(); log.info("key : " + key +
+         * ", value : " + detailAmountMap.get(key)); financeStat.setInstituteName(key);
+         * }
+         */
+        return null;
     }
 
     @Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
@@ -171,40 +169,35 @@ public class InstituteService {
     @Transactional(readOnly = true)
     public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(String instituteName) throws RuntimeException {
 
-        Institute institute = instituteRepository.findOneByName(instituteName);
+        /*
+         * Institute institute = instituteRepository.findOneByName(instituteName);
+         * 
+         * if (institute == null) throw new InstituteNotFoundException(instituteName);
+         * 
+         * List<InstituteAvgAmountVo> list =
+         * financeStatusRepository.getInstituteAvgAmountList(institute.getCode());
+         * 
+         * Map<Integer, Long> avgAmountMap = new HashMap<>(); for (InstituteAvgAmountVo
+         * insAmount : list) { avgAmountMap.put(insAmount.getYear(),
+         * insAmount.getAvgAmount()); }
+         * 
+         * // 평균의 최소값 키 int minKey = Collections.min(avgAmountMap.entrySet(),
+         * Map.Entry.comparingByValue()).getKey();
+         * 
+         * // 평균의 최대값 키 int maxKey = Collections.max(avgAmountMap.entrySet(),
+         * Map.Entry.comparingByValue()).getKey();
+         * 
+         * List<Map<Integer, Long>> minMaxList = new ArrayList<>();
+         * 
+         * minMaxList.add(new HashMap<Integer, Long>() { { put(minKey,
+         * avgAmountMap.get(minKey)); } });
+         * 
+         * minMaxList.add(new HashMap<Integer, Long>() { { put(maxKey,
+         * avgAmountMap.get(maxKey)); } });
+         * 
+         * log.info("minMaxList : " + minMaxList);
+         */
 
-        if (institute == null)
-            throw new InstituteNotFoundException(instituteName);
-
-        List<InstituteAvgAmountVo> list = financeStatusRepository.getInstituteAvgAmountList(institute.getCode());
-
-        Map<Integer, Long> avgAmountMap = new HashMap<>();
-        for (InstituteAvgAmountVo insAmount : list) {
-            avgAmountMap.put(insAmount.getYear(), insAmount.getAvgAmount());
-        }
-
-        // 평균의 최소값 키
-        int minKey = Collections.min(avgAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-
-        // 평균의 최대값 키
-        int maxKey = Collections.max(avgAmountMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-
-        List<Map<Integer, Long>> minMaxList = new ArrayList<>();
-
-        minMaxList.add(new HashMap<Integer, Long>() {
-            {
-                put(minKey, avgAmountMap.get(minKey));
-            }
-        });
-
-        minMaxList.add(new HashMap<Integer, Long>() {
-            {
-                put(maxKey, avgAmountMap.get(maxKey));
-            }
-        });
-
-        log.info("minMaxList : " + minMaxList);
-
-        return InstituteAvgMinMaxAmountVo.builder().instituteName(instituteName).supportAmount(minMaxList).build();
+        return null;
     }
 }

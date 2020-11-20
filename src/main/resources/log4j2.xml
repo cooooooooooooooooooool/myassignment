@@ -18,7 +18,7 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="com.jm" level="info" additivity="false">
+		<Logger name="com.myassign" level="info" additivity="false">
 			<appender-ref ref="fileAppender" />
 			<appender-ref ref="consoleAppender" />
 		</Logger>

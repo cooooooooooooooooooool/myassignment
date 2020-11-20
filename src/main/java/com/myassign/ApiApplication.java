@@ -1,22 +1,14 @@
 package com.myassign;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import com.myassign.model.entity.Institute;
-import com.myassign.service.InstituteService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,29 +47,6 @@ public class ApiApplication {
         map.put("KEB", "외환은행");
         map.put("ETC", "기타은행");
         return map;
-    }
-
-    /*
-     * csv to h2 database
-     */
-    @Bean
-    public CommandLineRunner initBank(InstituteService instituteService, @Qualifier("instituteCsvHeaderMap") Map<String, String> instituteCsvHeaderMap, @Qualifier("instituteNameMap") Map<String, String> instituteNameMap) {
-
-        return args -> {
-
-            Iterator<String> keyset = instituteCsvHeaderMap.keySet().iterator();
-            List<String> keys = IteratorUtils.toList(keyset);
-
-            List<Institute> list = new ArrayList<>();
-            for (String key : keys) {
-                list.add(Institute.builder().code(instituteCsvHeaderMap.get(key)).name(instituteNameMap.get(instituteCsvHeaderMap.get(key))).build());
-            }
-
-            // 은행 코드 저장
-            if (list != null && list.size() > 0) {
-                instituteService.saveInstitutes(list);
-            }
-        };
     }
 
     public static void main(String[] args) {
