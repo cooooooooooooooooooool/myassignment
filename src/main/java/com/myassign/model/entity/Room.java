@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Room {
 
     @Id
     private String id;

@@ -28,9 +28,6 @@ public class InstitueTest {
 
     private static final Logger logger = LoggerFactory.getLogger(InstitueTest.class);
 
-    // @Autowired
-    // private RestTemplate restTemplate;
-
     @Autowired
     private InstituteService instituteService;
 

@@ -6,18 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.net.URLEncoder;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,27 +24,25 @@ import com.myassign.TokenIssuer;
 import com.myassign.model.dto.AccessToken;
 import com.myassign.model.entity.User;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 public class MockRestAPITest {
-
-    private static final Logger logger = LoggerFactory.getLogger(MockRestAPITest.class);
-
-    @Rule
-    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
 
     private User user;
 
     private String accessToken;
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mock;
 
     @Before
     public void setUp() {
         this.user = User.builder().id("test02").password("1234").build();
-        logger.info("RestAPITest's setup is done...");
+        log.info("RestAPITest's setup is done...");
     }
 
     public static String asJsonString(final Object obj) {
@@ -76,8 +70,12 @@ public class MockRestAPITest {
      */
     @Test
     public void signupTest() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/oauth").content(asJsonString(user)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        /* @formatter:off */
+        mock.perform(MockMvcRequestBuilders.post("/oauth").content(asJsonString(user))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)).andDo(print())
+                                                .andExpect(status().isOk());
+        /* @formatter:on */
     }
 
     /**
@@ -90,7 +88,7 @@ public class MockRestAPITest {
         signupTest();
 
         // 사용자 인증 및 토큰 발급 테스트
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/oauth?id=" + user.getId() + "&password=" + user.getPassword()).content(asJsonString(user)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk()).andReturn();
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/oauth?id=" + user.getId() + "&password=" + user.getPassword()).content(asJsonString(user)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk()).andReturn();
 
         AccessToken token = toAccessToken(result.getResponse().getContentAsString());
         this.accessToken = token.getToken();
@@ -109,10 +107,10 @@ public class MockRestAPITest {
 
         signinTest();
 
-        logger.info("waiting 62 seconds for token expire ...");
+        log.info("waiting 62 seconds for token expire ...");
         Thread.sleep(1000 * 60 + 2 * 1000);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/oauth/token/refresh?id=" + user.getId() + "&password=" + user.getPassword()).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.get("/oauth/token/refresh?id=" + user.getId() + "&password=" + user.getPassword()).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 
     /**
@@ -127,7 +125,7 @@ public class MockRestAPITest {
         signupTest();
         signinTest();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/banks/init").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.post("/banks/init").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 
     /**
@@ -137,7 +135,7 @@ public class MockRestAPITest {
     public void getBanksTest() throws Exception {
         signupTest();
         signinTest();
-        mockMvc.perform(MockMvcRequestBuilders.get("/banks").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.get("/banks").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 
     /**
@@ -151,7 +149,7 @@ public class MockRestAPITest {
         // csv 데이터 초기화
         initBankStatusTest();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/banks/sum").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.get("/banks/sum").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 
     /**
@@ -165,7 +163,7 @@ public class MockRestAPITest {
         // csv 데이터 초기화
         initBankStatusTest();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/banks/max").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.get("/banks/max").header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 
     /**
@@ -182,6 +180,6 @@ public class MockRestAPITest {
         // csv 데이터 초기화
         initBankStatusTest();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/banks/avg/" + URLEncoder.encode(instituteName, "UTF-8")).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
+        mock.perform(MockMvcRequestBuilders.get("/banks/avg/" + URLEncoder.encode(instituteName, "UTF-8")).header(HttpHeaders.AUTHORIZATION, TokenIssuer.HEADER_PREFIX + accessToken).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
 }

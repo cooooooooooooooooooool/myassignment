@@ -7,8 +7,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,11 +24,12 @@ import com.myassign.model.dto.InstituteAvgMinMaxAmountVo;
 import com.myassign.model.entity.Institute;
 import com.myassign.model.entity.User;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RestAPITest {
-
-    private static final Logger logger = LoggerFactory.getLogger(RestAPITest.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -53,12 +52,18 @@ public class RestAPITest {
 
     private void signin() {
 
-        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth?id={id}&password={password}", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<AccessToken>() {
-        }, user.getId(), user.getPassword());
+        /* @formatter:off */
+        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth?id={id}&password={password}", 
+                                                                            HttpMethod.GET, 
+                                                                            getHttpHeader(null), 
+                                                                            new ParameterizedTypeReference<AccessToken>() {}, 
+                                                                            user.getId(), 
+                                                                            user.getPassword());
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         AccessToken accessToken = responseEntity.getBody();
-        logger.info("accessToken : " + accessToken);
+        log.info("accessToken : " + accessToken);
 
         if (accessToken != null)
             this.myAccessToken = accessToken.getToken();
@@ -69,12 +74,16 @@ public class RestAPITest {
      */
     @Test
     public void signupTest() {
-        ResponseEntity<String> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth", HttpMethod.POST, getHttpHeader(user), new ParameterizedTypeReference<String>() {
-        });
-        logger.info("responseEntity : " + responseEntity.getStatusCode());
+        /* @formatter:off */
+        ResponseEntity<String> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth", 
+                                                                        HttpMethod.POST, 
+                                                                        getHttpHeader(user), 
+                                                                        new ParameterizedTypeReference<String>() {});
+        /* @formatter:on */
+        log.info("responseEntity : " + responseEntity.getStatusCode());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        logger.info("response body : " + responseEntity.getBody());
+        log.info("response body : " + responseEntity.getBody());
         assertThat(responseEntity.getStatusCode()).isNotNull();
     }
 
@@ -84,12 +93,18 @@ public class RestAPITest {
     @Test
     public void signinTest() {
 
-        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth?id={id}&password={password}", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<AccessToken>() {
-        }, user.getId(), user.getPassword());
+        /* @formatter:off */
+        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth?id={id}&password={password}", 
+                                                                            HttpMethod.GET, 
+                                                                            getHttpHeader(null), 
+                                                                            new ParameterizedTypeReference<AccessToken>() {}, 
+                                                                            user.getId(), 
+                                                                            user.getPassword());
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         AccessToken accessToken = responseEntity.getBody();
-        logger.info("accessToken : " + accessToken);
+        log.info("accessToken : " + accessToken);
     }
 
     /**
@@ -100,19 +115,25 @@ public class RestAPITest {
     @Test
     public void tokenRefreshTest() throws InterruptedException {
 
-        logger.info("Signin and token generate!");
+        log.info("Signin and token generate!");
         signin();
 
-        logger.info("Waiting 65 seconds for token expire ...");
+        log.info("Waiting 65 seconds for token expire ...");
         Thread.sleep(1000 * 65);
 
         // 만료된 토큰으로 토큰 재발급 요청
-        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth/token/refresh?id={id}&password={password}", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<AccessToken>() {
-        }, user.getId(), user.getPassword());
+        /* @formatter:off */
+        ResponseEntity<AccessToken> responseEntity = restTemplate.exchange("http://localhost:8080/api/oauth/token/refresh?id={id}&password={password}", 
+                                                                            HttpMethod.GET, 
+                                                                            getHttpHeader(null), 
+                                                                            new ParameterizedTypeReference<AccessToken>() {}, 
+                                                                            user.getId(), 
+                                                                            user.getPassword());
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         AccessToken accessToken = responseEntity.getBody();
-        logger.info("accessToken : " + accessToken);
+        log.info("accessToken : " + accessToken);
     }
 
     /**
@@ -123,9 +144,13 @@ public class RestAPITest {
     @Test
     public void initBankStatusTest() throws InterruptedException {
         signin();
-        ResponseEntity<String> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/init", HttpMethod.POST, getHttpHeader(null), new ParameterizedTypeReference<String>() {
-        });
-        logger.info("responseEntity : " + responseEntity.getStatusCode());
+        /* @formatter:off */
+        ResponseEntity<String> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/init", 
+                                                                        HttpMethod.POST, 
+                                                                        getHttpHeader(null), 
+                                                                        new ParameterizedTypeReference<String>() {});
+        /* @formatter:on */
+        log.info("responseEntity : " + responseEntity.getStatusCode());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -141,7 +166,7 @@ public class RestAPITest {
 
         List<Institute> list = responseEntity.getBody();
         for (Institute institute : list) {
-            logger.info("institute : " + institute);
+            log.info("institute : " + institute);
         }
     }
 
@@ -152,13 +177,17 @@ public class RestAPITest {
     public void getTotalAmountListTest() {
 
         signin();
-        ResponseEntity<List<FinanceStatVo>> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/sum", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<List<FinanceStatVo>>() {
-        });
+        /* @formatter:off */
+        ResponseEntity<List<FinanceStatVo>> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/sum", 
+                                                                                    HttpMethod.GET, 
+                                                                                    getHttpHeader(null), 
+                                                                                    new ParameterizedTypeReference<List<FinanceStatVo>>() {});
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         List<FinanceStatVo> list = responseEntity.getBody();
         for (FinanceStatVo financeStat : list) {
-            logger.info("financeStat : " + financeStat);
+            log.info("financeStat : " + financeStat);
         }
     }
 
@@ -169,13 +198,17 @@ public class RestAPITest {
     public void getMaxAmountInstitueListTest() {
 
         signin();
-        ResponseEntity<List<FinanceStatVo>> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/max", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<List<FinanceStatVo>>() {
-        });
+        /* @formatter:off */
+        ResponseEntity<List<FinanceStatVo>> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/max", 
+                                                                                    HttpMethod.GET, 
+                                                                                    getHttpHeader(null), 
+                                                                                    new ParameterizedTypeReference<List<FinanceStatVo>>() {});
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         List<FinanceStatVo> list = responseEntity.getBody();
         for (FinanceStatVo financeStat : list) {
-            logger.info("financeStat : " + financeStat);
+            log.info("financeStat : " + financeStat);
         }
     }
 
@@ -188,11 +221,16 @@ public class RestAPITest {
         String instituteName = "외환은행";
 
         signin();
-        ResponseEntity<InstituteAvgMinMaxAmountVo> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/avg/{instituteName}", HttpMethod.GET, getHttpHeader(null), new ParameterizedTypeReference<InstituteAvgMinMaxAmountVo>() {
-        }, instituteName);
+        /* @formatter:off */
+        ResponseEntity<InstituteAvgMinMaxAmountVo> responseEntity = restTemplate.exchange("http://localhost:8080/api/banks/avg/{instituteName}", 
+                                                                                            HttpMethod.GET, 
+                                                                                            getHttpHeader(null), 
+                                                                                            new ParameterizedTypeReference<InstituteAvgMinMaxAmountVo>() {}, 
+                                                                                            instituteName);
+        /* @formatter:on */
         assertThat(responseEntity.getBody()).isNotNull();
 
         InstituteAvgMinMaxAmountVo instituteAvgMinMaxAmount = responseEntity.getBody();
-        logger.info("instituteAvgMinMaxAmount : " + instituteAvgMinMaxAmount);
+        log.info("instituteAvgMinMaxAmount : " + instituteAvgMinMaxAmount);
     }
 }
