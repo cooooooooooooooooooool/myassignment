@@ -165,7 +165,6 @@ public class InstituteService {
     /**
      * 각 년도별 특정 기관의 지원 금액 평균값을 조회
      */
-    @SuppressWarnings("serial")
     @Transactional(readOnly = true)
     public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(String instituteName) throws RuntimeException {
 
