@@ -3,7 +3,6 @@ server:
         
 spring:
    application.name: Pay Api
-   profiles.active: ${spring.profiles.active}
    
    datasource:
       driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy

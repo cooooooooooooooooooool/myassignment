@@ -19,9 +19,9 @@ import com.jm.exception.AccessTokenEmptyException;
 import com.jm.exception.AccessTokenInvalidException;
 import com.jm.exception.UserNotFoundException;
 import com.jm.exception.UserPasswordWrongException;
+import com.jm.model.dto.AccessToken;
 import com.jm.model.entity.User;
 import com.jm.service.UserService;
-import com.jm.vo.AccessToken;
 
 import lombok.extern.slf4j.Slf4j;
 

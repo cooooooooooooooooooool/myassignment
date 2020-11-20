@@ -1,4 +1,4 @@
-package com.jm.vo;
+package com.jm.model.dto;
 
 import java.util.Date;
 

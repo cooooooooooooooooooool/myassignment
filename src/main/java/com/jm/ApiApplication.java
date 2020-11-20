@@ -1,6 +1,7 @@
 package com.jm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,34 +12,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
 import com.jm.model.entity.Institute;
 import com.jm.service.InstituteService;
 
-@ServletComponentScan
-@SpringBootApplication
-public class StartBankApplication extends SpringBootServletInitializer {
+import lombok.extern.slf4j.Slf4j;
 
-    @Bean
-    public ServletWebServerFactory servletWebServerFactory() {
-        return new TomcatServletWebServerFactory();
-    }
+@Slf4j
+@SpringBootApplication
+@ComponentScan("com.jm")
+public class ApiApplication {
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-
-    /*
-     * @Bean public TaskScheduler taskScheduler() { return new
-     * ConcurrentTaskScheduler(); }
-     */
 
     @Bean
     @Qualifier("instituteCsvHeaderMap")
@@ -96,6 +87,10 @@ public class StartBankApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(StartBankApplication.class, args);
+        /* @formatter:off */
+        Arrays.stream( args )
+              .forEach( log::debug );
+        /* @formatter:on */
+        SpringApplication.run(ApiApplication.class, args);
     }
 }

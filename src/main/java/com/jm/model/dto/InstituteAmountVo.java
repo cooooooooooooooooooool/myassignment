@@ -1,4 +1,4 @@
-package com.jm.vo;
+package com.jm.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

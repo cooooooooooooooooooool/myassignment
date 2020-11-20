@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.jm.model.dto.FinanceStatVo;
+import com.jm.model.dto.InstituteAmountVo;
+import com.jm.model.dto.InstituteAvgAmountVo;
 import com.jm.model.entity.FinanceStatus;
-import com.jm.vo.FinanceStatVo;
-import com.jm.vo.InstituteAmountVo;
-import com.jm.vo.InstituteAvgAmountVo;
 
 public interface FinanceStatusRepository extends JpaRepository<FinanceStatus, String> {
 

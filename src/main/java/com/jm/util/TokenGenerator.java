@@ -1,4 +1,4 @@
-package com.jm;
+package com.jm.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class TokenGenerator {
 
     public static String generateToken() {

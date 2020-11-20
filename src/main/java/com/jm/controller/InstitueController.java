@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jm.model.dto.FinanceStatVo;
+import com.jm.model.dto.InstituteAvgMinMaxAmountVo;
 import com.jm.model.entity.Institute;
 import com.jm.service.InstituteService;
-import com.jm.vo.FinanceStatVo;
-import com.jm.vo.InstituteAvgMinMaxAmountVo;
 
 @Validated
 @RestController

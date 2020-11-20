@@ -10,8 +10,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.jm.model.dto.AccessToken;
 import com.jm.model.entity.User;
-import com.jm.vo.AccessToken;
 
 import lombok.extern.slf4j.Slf4j;
 

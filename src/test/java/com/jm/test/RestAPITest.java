@@ -20,11 +20,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import com.jm.model.dto.AccessToken;
+import com.jm.model.dto.FinanceStatVo;
+import com.jm.model.dto.InstituteAvgMinMaxAmountVo;
 import com.jm.model.entity.Institute;
 import com.jm.model.entity.User;
-import com.jm.vo.AccessToken;
-import com.jm.vo.FinanceStatVo;
-import com.jm.vo.InstituteAvgMinMaxAmountVo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

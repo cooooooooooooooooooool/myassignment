@@ -25,8 +25,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jm.TokenIssuer;
+import com.jm.model.dto.AccessToken;
 import com.jm.model.entity.User;
-import com.jm.vo.AccessToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

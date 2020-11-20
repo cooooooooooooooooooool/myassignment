@@ -10,8 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.jm.TokenIssuer;
+import com.jm.model.dto.AccessToken;
 import com.jm.model.entity.User;
-import com.jm.vo.AccessToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

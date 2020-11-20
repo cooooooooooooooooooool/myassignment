@@ -1,4 +1,7 @@
-package com.jm.vo;
+package com.jm.model.dto;
+
+import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstituteAvgAmountVo {
-	
-	private int year;
+public class InstituteAvgMinMaxAmountVo {
 
     private String instituteName;
     
-    private long avgAmount;
+    private List<Map<Integer, Long>> supportAmount;
 }

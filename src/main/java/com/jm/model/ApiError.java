@@ -1,4 +1,4 @@
-package com.jm.advice;
+package com.jm.model;
 
 public class ApiError {
 

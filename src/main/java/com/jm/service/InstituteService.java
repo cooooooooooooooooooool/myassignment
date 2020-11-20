@@ -24,14 +24,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jm.exception.InstituteNotFoundException;
+import com.jm.model.dto.FinanceStatVo;
+import com.jm.model.dto.InstituteAmountVo;
+import com.jm.model.dto.InstituteAvgAmountVo;
+import com.jm.model.dto.InstituteAvgMinMaxAmountVo;
 import com.jm.model.entity.FinanceStatus;
 import com.jm.model.entity.Institute;
 import com.jm.model.repository.FinanceStatusRepository;
 import com.jm.model.repository.InstituteRepository;
-import com.jm.vo.FinanceStatVo;
-import com.jm.vo.InstituteAmountVo;
-import com.jm.vo.InstituteAvgAmountVo;
-import com.jm.vo.InstituteAvgMinMaxAmountVo;
 
 import lombok.extern.slf4j.Slf4j;
 
