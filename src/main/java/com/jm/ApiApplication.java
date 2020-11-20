@@ -14,7 +14,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.client.RestTemplate;
 
 import com.jm.model.entity.Institute;
 import com.jm.service.InstituteService;
@@ -25,11 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootApplication
 @ComponentScan("com.jm")
 public class ApiApplication {
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Bean
     @Qualifier("instituteCsvHeaderMap")
