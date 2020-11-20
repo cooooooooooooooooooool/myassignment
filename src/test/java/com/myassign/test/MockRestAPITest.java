@@ -41,7 +41,12 @@ public class MockRestAPITest {
 
     @Before
     public void setUp() {
-        this.user = User.builder().id("test02").password("1234").build();
+        /* @formatter:off */
+        this.user = User.builder()
+                        .id("test02")
+                        .password("1234")
+                        .build();
+        /* @formatter:off */
         log.info("RestAPITest's setup is done...");
     }
 
