@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
-@ComponentScan("com.jm")
+@ComponentScan("com.myassign")
 public class ApiApplication {
 
     @Bean

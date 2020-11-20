@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.myassign.exception.AccessTokenEmptyException;
 import com.myassign.exception.AccessTokenInvalidException;
-import com.myassign.exception.InstituteNotFoundException;
+import com.myassign.exception.ServiceException;
 import com.myassign.exception.UserNotFoundException;
 import com.myassign.exception.UserPasswordWrongException;
 import com.myassign.model.ApiError;
@@ -33,8 +33,8 @@ public class ApiExceptionAdvice extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, apiError, headers, status, request);
     }
 
-    @ExceptionHandler(InstituteNotFoundException.class)
-    public ResponseEntity<Object> instituteNotFound(HttpServletResponse response, InstituteNotFoundException ex, WebRequest request) throws IOException {
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<Object> error(HttpServletResponse response, ServiceException ex, WebRequest request) throws IOException {
         return handleExceptionInternal(ex, null, null, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 

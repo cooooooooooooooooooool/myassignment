@@ -16,24 +16,44 @@
  *==================================================================================*/
 package com.myassign.config;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
+import com.myassign.model.entity.User;
+import com.myassign.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ApiApplicationRunner implements ApplicationRunner {
 
+    private final UserService userService;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
+
         /* @formatter:off */
-        /*
-        repository.saveAll( Arrays.asList( this.getOauthClientDetails( "cloudrpa-client1", "7aKTMjx9qkHHipSg" ),
-                                           this.getOauthClientDetails( "cloudrpa-client2", "FJVFmCEn8NIKbJnQ" ),
-                                           this.getOauthClientDetails( "cloudrpa-client3", "uZEaHZUdvPzOGgkT" ) ) );
-         */
+        List<User> list = new ArrayList<>();
+        
+        for (int i=0; i<5; i++) {
+            User user = User.builder()
+                            .id("user-"+i)
+                            .name("사용자"+i)
+                            .balance(Long.valueOf(Integer.MAX_VALUE))
+                            .createDate(new Date()).build();
+            log.info("user : " + user);
+            list.add(user);
+        }
+        
+        userService.createUser(list);
         /* @formatter:on */
     }
 }

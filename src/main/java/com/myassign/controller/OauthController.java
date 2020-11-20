@@ -45,7 +45,7 @@ public class OauthController {
     @PostMapping()
     public String signup(@RequestBody User user) throws Exception {
         user.setPassword(DigestUtils.sha256Hex(user.getPassword()));
-        service.addUser(user);
+        service.createUser(user);
         AccessToken accessToken = tokenIssuer.generateAuthenticateToken(user);
         return accessToken.getToken();
     }

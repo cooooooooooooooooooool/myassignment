@@ -1,20 +1,8 @@
 package com.myassign.service;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections4.IteratorUtils;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -40,62 +28,14 @@ public class InstituteService {
 
     private final FinanceStatusRepository financeStatusRepository;
 
-    @Autowired
-    @Qualifier("instituteCsvHeaderMap")
-    private Map<String, String> instituteCsvHeaderMap;
-
-    @Autowired
-    @Qualifier("instituteNameMap")
-    private Map<String, String> instituteNameMap;
-
     @Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void initFinanceStatuses() throws RuntimeException, IOException {
-
-        Iterator<String> keyset = instituteCsvHeaderMap.keySet().iterator();
-        List<String> keys = IteratorUtils.toList(keyset);
-
-        List<Institute> list = new ArrayList<>();
-        for (String key : keys) {
-            list.add(Institute.builder().code(instituteNameMap.get(instituteCsvHeaderMap.get(key))).name(instituteCsvHeaderMap.get(key)).build());
-        }
-
-        // CSV 로부터 데이터 초기화
-        InputStream is = getClass().getClassLoader().getResourceAsStream("data.csv");
-        Reader reader = new InputStreamReader(is, "euc-kr");
-
-        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader("연도", "월", "주택도시기금1)(억원)", "국민은행(억원)", "우리은행(억원)", "신한은행(억원)", "한국시티은행(억원)", "하나은행(억원)", "농협은행/수협은행(억원)", "외환은행(억원)", "기타은행(억원)").withIgnoreHeaderCase().withTrim());
-
-        List<FinanceStatus> financeList = new ArrayList<>();
-        try {
-            for (CSVRecord csvRecord : csvParser) {
-
-                if (csvRecord.getRecordNumber() > 1) {
-
-                    int year = Integer.parseInt(csvRecord.get("연도"));
-                    int month = Integer.parseInt(csvRecord.get("월"));
-
-                    for (String key : keys) {
-                        log.info(csvRecord.get(key));
-                        log.info(instituteCsvHeaderMap.get(key));
-                        financeList.add(FinanceStatus.builder().year(year).month(month).code(instituteCsvHeaderMap.get(key)).amount(Long.parseLong(csvRecord.get(key).replaceAll(",", ""))).build());
-                    }
-                }
-            }
-        } finally {
-            csvParser.close();
-        }
-
-        // 주택 금융 공급 현황 저장
-        if (financeList != null && financeList.size() > 0) {
-            log.info("Institute list insert!");
-            financeStatusRepository.saveAll(financeList);
-        }
+    public void initFinanceStatuses() throws IOException {
     }
 
     /**
      * 전체 은행 코드 목록을 조회
      */
-    public List<Institute> getInstitutes() throws RuntimeException {
+    public List<Institute> getInstitutes() {
         return instituteRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
     }
 
@@ -103,7 +43,7 @@ public class InstituteService {
      * 연도별 지원 금액 합계를 조회
      */
     @Transactional(readOnly = true)
-    public List<FinanceStatVo> getTotalAmountList() throws RuntimeException {
+    public List<FinanceStatVo> getTotalAmountList() {
         /*
          * List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
          * 
@@ -125,7 +65,7 @@ public class InstituteService {
      * 각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명을 조회
      */
     @Transactional(readOnly = true)
-    public List<FinanceStatVo> getMaxAmountInstitueList() throws RuntimeException {
+    public List<FinanceStatVo> getMaxAmountInstitueList() {
         /*
          * List<FinanceStatVo> list = financeStatusRepository.getTotalAmountList();
          * 
@@ -147,18 +87,18 @@ public class InstituteService {
     }
 
     @Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void saveInstitutes(List<Institute> list) throws RuntimeException {
+    public void saveInstitutes(List<Institute> list) {
         log.info("Institute list insert!");
         instituteRepository.saveAll(list);
     }
 
     @Transactional(readOnly = true)
-    public void saveFinanceStatus(FinanceStatus financeStatus) throws RuntimeException {
+    public void saveFinanceStatus(FinanceStatus financeStatus) {
         financeStatusRepository.save(financeStatus);
     }
 
     @Transactional(readOnly = true)
-    public Institute getInstituteByName(String instituteName) throws RuntimeException {
+    public Institute getInstituteByName(String instituteName) {
         return instituteRepository.findOneByName(instituteName);
     }
 
@@ -166,7 +106,7 @@ public class InstituteService {
      * 각 년도별 특정 기관의 지원 금액 평균값을 조회
      */
     @Transactional(readOnly = true)
-    public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(String instituteName) throws RuntimeException {
+    public InstituteAvgMinMaxAmountVo getInstituteAvgMinMaxAmount(String instituteName) {
 
         /*
          * Institute institute = instituteRepository.findOneByName(instituteName);
