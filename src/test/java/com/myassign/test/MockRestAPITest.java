@@ -82,23 +82,56 @@ public class MockRestAPITest {
         
         // 인증 처리
         login(userId, password);
-
-        /* @formatter:off */
+        
+        // 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, AccessTokenIssuer.HEADER_PREFIX + accessToken);
         headers.add("X-USER-ID", userId);
         headers.add("X-ROOM-ID", roomId.toString());
-        MvcResult result = mock.perform(MockMvcRequestBuilders.post("/spray").headers(headers)
-                                                                             .contentType(MediaType.APPLICATION_JSON)
-                                                                             .accept(MediaType.APPLICATION_JSON)
-                                                                             .param("totalPrice", Integer.toString(targetPrice))
-                                                                             .param("userCount", Integer.toString(targetCount)))
+        
+        /* @formatter:off */
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/sign/find").headers(headers)
+                                                                                .contentType(MediaType.APPLICATION_JSON)
+                                                                                .accept(MediaType.APPLICATION_JSON))
                                                               .andDo(print())
                                                               .andExpect(status().isOk())
                                                               .andReturn();
         /* @formatter:on */
+        log.info("pre login user : {}", result.getResponse().getContentAsString());
+
+        /* @formatter:off */
+        result = mock.perform(MockMvcRequestBuilders.post("/spray").headers(headers)
+                                                                   .contentType(MediaType.APPLICATION_JSON)
+                                                                   .accept(MediaType.APPLICATION_JSON)
+                                                                   .param("totalPrice", Integer.toString(targetPrice))
+                                                                   .param("userCount", Integer.toString(targetCount)))
+                                                    .andDo(print())
+                                                    .andExpect(status().isOk())
+                                                    .andReturn();
+        /* @formatter:on */
         String token = result.getResponse().getContentAsString();
         log.info("transaction token : {}", token);
+
+        /* @formatter:off */
+        result = mock.perform(MockMvcRequestBuilders.get("/transaction").headers(headers)
+                                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                                        .accept(MediaType.APPLICATION_JSON)
+                                                                        .param("token", token))
+                                                    .andDo(print())
+                                                    .andExpect(status().isOk())
+                                                    .andReturn();
+        /* @formatter:on */
+        log.info("transaction : {}", result.getResponse().getContentAsString());
+
+        /* @formatter:off */
+        result = mock.perform(MockMvcRequestBuilders.get("/sign/find").headers(headers)
+                                                                      .contentType(MediaType.APPLICATION_JSON)
+                                                                      .accept(MediaType.APPLICATION_JSON))
+                                                    .andDo(print())
+                                                    .andExpect(status().isOk())
+                                                    .andReturn();
+        /* @formatter:on */
+        log.info("after login user : {}", result.getResponse().getContentAsString());
     }
 
     /**

@@ -164,13 +164,6 @@
 			<artifactId>commons-dbcp2</artifactId>
 		</dependency>
 
-		<!-- apache open csv processor -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>1.6</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>

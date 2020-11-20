@@ -41,16 +41,4 @@ public class RoomUser {
 
     @Column(name = "join_date", updatable = false)
     private Date joinDate;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RoomUser [id=").append(id).append(", room=").append(room).append(", user=").append(user).append(", joinDate=").append(joinDate).append("]");
-        return builder.toString();
-    }
 }

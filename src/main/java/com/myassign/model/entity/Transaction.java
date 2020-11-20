@@ -57,16 +57,4 @@ public class Transaction {
 
     @Column(name = "create_date", updatable = false)
     private Date createDate;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Transaction [id=").append(id).append(", room=").append(room).append(", token=").append(token).append(", spreadUser=").append(spreadUser).append(", totalPrice=").append(totalPrice).append(", createDate=").append(createDate).append("]");
-        return builder.toString();
-    }
 }

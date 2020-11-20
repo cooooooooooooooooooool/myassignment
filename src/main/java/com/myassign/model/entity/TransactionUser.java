@@ -51,16 +51,4 @@ public class TransactionUser {
 
     @Column(name = "create_date")
     private Date createDate;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("TransactionUser [id=").append(id).append(", transaction=").append(transaction).append(", receiveUserId=").append(receiveUserId).append(", order=").append(order).append(", price=").append(price).append(", receiveDate=").append(receiveDate).append(", createDate=").append(createDate).append("]");
-        return builder.toString();
-    }
 }

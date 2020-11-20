@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SprayService {
+public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionUserRepository transactionUserRepository;
@@ -81,5 +81,18 @@ public class SprayService {
         userRepository.save(user);
 
         return transaction.getToken();
+    }
+
+    /**
+     * 뿌리기 조회
+     */
+    public Transaction getTransaction(UUID roomId, String token) {
+
+        /* @formatter:off */
+        Room room = roomRepository.findById(roomId)
+                                  .orElseThrow(() -> new RoomNotExistException(roomId));
+        /* @formatter:on */
+
+        return transactionRepository.findByRoomAndToken(room, token);
     }
 }
