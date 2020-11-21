@@ -1,6 +1,7 @@
 package com.myassign.model.dto;
 
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,19 +14,15 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionUserDto {
+public class TransactionResultDto {
 
-    private Long id;
+    private UUID roomId;
 
-    private TransactionDto transaction;
+    private String roomName;
 
-    private String receiveUserId;
-
-    private Integer order;
+    private String token;
 
     private Long price;
 
     private Date receiveDate;
-
-    private Date createDate;
 }

@@ -27,7 +27,7 @@ public class TransactionDto {
 
     private Long totalPrice;
 
-    private List<TransactionUserDto> transactionUsers;
+    private List<TransactionResultDto> transactionUsers;
 
     private Date createDate;
 }

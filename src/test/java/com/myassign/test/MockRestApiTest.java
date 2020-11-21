@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MockRestAPITest {
+public class MockRestApiTest {
 
     private String accessToken;
 
