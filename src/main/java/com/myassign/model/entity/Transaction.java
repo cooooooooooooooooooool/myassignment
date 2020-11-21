@@ -38,19 +38,22 @@ public class Transaction {
     @Column(name = "transaction_id", columnDefinition = "CHAR", length = 36)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
     private Room room;
 
     @Column(name = "token", columnDefinition = "CHAR", length = 3, nullable = false)
     private String token;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spread_user", referencedColumnName = "user_id", nullable = false)
     private User spreadUser;
 
     @Column(name = "total_price", columnDefinition = "BIGINT", length = 20, nullable = false)
     private Long totalPrice;
+
+    @Column(name = "current_receive_price", columnDefinition = "BIGINT", length = 20, nullable = false)
+    private Long currentReceivePrice;
 
     @OneToMany(mappedBy = "transaction")
     private List<TransactionUser> transactionUserList;

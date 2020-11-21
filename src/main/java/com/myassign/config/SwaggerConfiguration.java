@@ -29,7 +29,7 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2).groupName("pay")
                 								 	  .apiInfo(this.apiInfo())
                 								 	  .select()
-                								 	  .apis(RequestHandlerSelectors.basePackage("com.jm.controller"))
+                								 	  .apis(RequestHandlerSelectors.basePackage("com.myassign.controller"))
                 								 	  .paths(PathSelectors.any())
                 								 	  .build();
         /* @formatter:on */

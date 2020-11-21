@@ -1,20 +1,25 @@
 package com.myassign.service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Minutes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.myassign.exception.RoomNotExistException;
 import com.myassign.exception.TransactionExpiredException;
+import com.myassign.exception.TransactionNotFoundException;
 import com.myassign.exception.TransactionPermissionException;
-import com.myassign.exception.TransactoinNotFoundException;
 import com.myassign.exception.UserNotFoundException;
+import com.myassign.model.dto.TransactionReceiveUserDto;
 import com.myassign.model.dto.TransactionResultDto;
+import com.myassign.model.dto.TransactionStatusDto;
 import com.myassign.model.entity.Room;
 import com.myassign.model.entity.Transaction;
 import com.myassign.model.entity.TransactionUser;
@@ -58,14 +63,12 @@ public class TransactionService {
                                              .token(TransactionTokenGenerator.generateToken())
                                              .totalPrice(Long.valueOf(totalPrice))
                                              .spreadUser(user)
+                                             .currentReceivePrice(0L)
                                              .createDate(new Date())
                                              .build();
         /* @formatter:on */
 
-        log.info("room : {}", room);
-        log.info("user : {}", user);
         transaction = transactionRepository.save(transaction);
-        log.info("new transaction : {}, {}", transaction.getId(), transaction.getToken());
 
         // 분배 처리
         int userPrice = totalPrice / userCount;
@@ -78,9 +81,7 @@ public class TransactionService {
                                                              .createDate(new Date())
                                                              .build();
             /* @formatter:on */
-            log.info("({}) transaction user : {}", i, transactionUser);
-            transactionUser = transactionUserRepository.save(transactionUser);
-            log.info("transactionUser : {}", transactionUser);
+            transactionUserRepository.save(transactionUser);
         }
 
         // 잔액 변경 처리
@@ -104,15 +105,10 @@ public class TransactionService {
         
         User user = userRepository.findById(userId)
                                   .orElseThrow(() -> new UserNotFoundException(userId));
-        /* @formatter:on */
 
-        log.info("room : {}", room);
-        log.info("user : {}", user);
-
-        /* @formatter:off */
         Transaction transaction = transactionRepository.findByRoomAndToken(room, token)
                                                        .orElseThrow(() -> {
-                                                           throw new TransactoinNotFoundException(roomId, token);
+                                                           throw new TransactionNotFoundException(roomId, token);
                                                        });
         /* @formatter:on */
 
@@ -120,20 +116,24 @@ public class TransactionService {
             throw new TransactionPermissionException();
         }
 
-        Duration duration = Duration.between(LocalDateTime.now(), transaction.getCreateDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-        long diff = Math.abs(duration.toMinutes());
+        int diff = Minutes.minutesBetween(new DateTime(transaction.getCreateDate().getTime()), DateTime.now()).getMinutes();
 
         // 뿌리기 이후 10분이 경과한 경우 받기 불가 처리
         if (diff > 10) {
             log.info("Request transaction is expired. 10 minutes, roomId : {}, token : {}", roomId, token);
-            throw new TransactionExpiredException(token);
+            throw new TransactionExpiredException(token, roomId);
         }
 
         TransactionUser transactionUser = transactionUserRepository.findTop1ByTransactionAndReceiveUserIdNullOrderByOrderAsc(transaction);
         log.info("updatable transaction, token : {}, request user : {}", transaction.getToken(), userId);
 
-        // 받은 금액의 사용자 데이터 변경
         long price = transactionUser.getPrice();
+
+        // 받은 금액 누적 데이터 변경
+        transaction.setCurrentReceivePrice(transaction.getCurrentReceivePrice() + price);
+        transactionRepository.save(transaction);
+
+        // 받은 금액의 사용자 데이터 변경
         transactionUser.setReceiveUserId(userId);
         transactionUser.setReceiveDate(new Date());
         transactionUserRepository.save(transactionUser);
@@ -144,9 +144,7 @@ public class TransactionService {
 
         /* @formatter:off */
         TransactionResultDto result = TransactionResultDto.builder()
-                                                          .roomId(roomId)
                                                           .token(token)
-                                                          .roomName(room.getName())
                                                           .price(price)
                                                           .receiveDate(transactionUser.getReceiveDate())
                                                           .build();
@@ -156,9 +154,9 @@ public class TransactionService {
     }
 
     /**
-     * 뿌리기 조회
+     * 뿌리기 상태 조회
      */
-    public Transaction getTransaction(UUID roomId, String token) {
+    public TransactionStatusDto getTransactionStatus(String userId, UUID roomId, String token) {
 
         /* @formatter:off */
         Room room = roomRepository.findById(roomId)
@@ -166,10 +164,45 @@ public class TransactionService {
 
         Transaction transaction = transactionRepository.findByRoomAndToken(room, token)
                                                        .orElseThrow(() -> {
-                                                           throw new TransactoinNotFoundException(roomId, token);
+                                                           throw new TransactionNotFoundException(roomId, token);
                                                        });
         /* @formatter:on */
 
-        return transaction;
+        if (!transaction.getSpreadUser().getId().equals(userId)) {
+            throw new TransactionPermissionException();
+        }
+
+        int diff = Days.daysBetween(new DateTime(transaction.getCreateDate().getTime()), DateTime.now()).getDays();
+        // int diff = Minutes.minutesBetween(new
+        // DateTime(transaction.getCreateDate().getTime()),
+        // DateTime.now()).getMinutes();
+
+        // 만 7일이 지난 뿌리기는 조회 불가, 여기에서는 1분
+        if (diff > 7) {
+            log.info("Request transaction data exceed 7 day, roomId : {}, token : {}", roomId, token);
+            throw new TransactionExpiredException("Request transaction data exceed 7 day. token : " + token);
+        }
+
+        // 뿌리기 받은 데이터 조회
+        List<TransactionUser> list = transactionUserRepository.findByTransactionOrderByOrderAsc(transaction);
+
+        /* @formatter:off */
+        List<TransactionReceiveUserDto> receiverUsers = list.stream()
+                                                            .filter(x -> StringUtils.isNotEmpty(x.getReceiveUserId()))
+                                                            .map(e -> {
+                                                                return TransactionReceiveUserDto.builder().price(e.getPrice()).userId(e.getReceiveUserId()).build();
+                                                            })
+                                                            .collect(Collectors.toList());
+        
+        
+        TransactionStatusDto dto = TransactionStatusDto.builder()
+                                                       .receiveFinishPrice(transaction.getCurrentReceivePrice())
+                                                       .sprayDate(transaction.getCreateDate())
+                                                       .sprayPrice(transaction.getTotalPrice())
+                                                       .receiverUsers(receiverUsers)
+                                                       .build();
+        /* @formatter:on */
+
+        return dto;
     }
 }

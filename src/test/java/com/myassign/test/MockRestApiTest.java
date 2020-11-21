@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myassign.model.dto.AccessToken;
-import com.myassign.util.AccessTokenIssuer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,8 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MockRestApiTest {
-
-    private String accessToken;
 
     private UUID roomId;
 
@@ -75,36 +72,23 @@ public class MockRestApiTest {
     @Test
     public void sprayTest() throws Exception {
         
-        String userId = "user-0";
-        String password = "1234";
+        // 뿌리기 전체 금액
         int targetPrice = 3247;
+        
+        // 사용자수
         int targetCount = 3;
         
-        // 인증 처리
-        login(userId, password);
-        
-        // 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, AccessTokenIssuer.HEADER_PREFIX + accessToken);
-        headers.add("X-USER-ID", userId);
-        headers.add("X-ROOM-ID", roomId.toString());
+        // Rest API 호출 결과
+        MvcResult result = null;
         
         /* @formatter:off */
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/sign/find").headers(headers)
-                                                                                .contentType(MediaType.APPLICATION_JSON)
-                                                                                .accept(MediaType.APPLICATION_JSON))
-                                                              .andDo(print())
-                                                              .andExpect(status().isOk())
-                                                              .andReturn();
-        /* @formatter:on */
-        log.info("pre login user : {}", result.getResponse().getContentAsString());
-
-        /* @formatter:off */
-        result = mock.perform(MockMvcRequestBuilders.post("/spray").headers(headers)
-                                                                   .contentType(MediaType.APPLICATION_JSON)
-                                                                   .accept(MediaType.APPLICATION_JSON)
-                                                                   .param("totalPrice", Integer.toString(targetPrice))
-                                                                   .param("userCount", Integer.toString(targetCount)))
+        // 뿌리기 테스트, 사용자 아이디 : user-0
+        String userId = "user-0";
+        result = mock.perform(MockMvcRequestBuilders.post("/transaction").headers(getHttpHeader(userId, roomId))
+                                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                                         .accept(MediaType.APPLICATION_JSON)
+                                                                         .param("totalPrice", Integer.toString(targetPrice))
+                                                                         .param("userCount", Integer.toString(targetCount)))
                                                     .andDo(print())
                                                     .andExpect(status().isOk())
                                                     .andReturn();
@@ -113,44 +97,65 @@ public class MockRestApiTest {
         log.info("transaction token : {}", token);
 
         /* @formatter:off */
-        result = mock.perform(MockMvcRequestBuilders.get("/transaction").headers(headers)
+        
+        // 받기 테스트, 사용자 아이디 : user-1 
+        userId = "user-1";
+        result = mock.perform(MockMvcRequestBuilders.put("/transaction/"+token).headers(getHttpHeader(userId, roomId))
+                                                                               .contentType(MediaType.APPLICATION_JSON)
+                                                                               .accept(MediaType.APPLICATION_JSON))
+                                                    .andDo(print())
+                                                    .andExpect(status().isOk())
+                                                    .andReturn();
+        
+        // 받기 테스트 : 뿌린 사용자가 받기를 시도하는 경우 퍼미션 에러 발생, 사용자 아이디 : user-0 
+        userId = "user-0";
+        result = mock.perform(MockMvcRequestBuilders.put("/transaction/"+token).headers(getHttpHeader(userId, roomId))
+                                                                               .contentType(MediaType.APPLICATION_JSON)
+                                                                               .accept(MediaType.APPLICATION_JSON))
+                                                    .andDo(print())
+                                                    .andExpect(status().isForbidden())
+                                                    .andReturn();
+        
+        // 상태 조회 테스트 : 본인이 뿌리기 조회, 사용자 아이디 : user-0
+        userId = "user-0";
+        result = mock.perform(MockMvcRequestBuilders.get("/transaction").headers(getHttpHeader(userId, roomId))
                                                                         .contentType(MediaType.APPLICATION_JSON)
                                                                         .accept(MediaType.APPLICATION_JSON)
                                                                         .param("token", token))
                                                     .andDo(print())
                                                     .andExpect(status().isOk())
                                                     .andReturn();
-        /* @formatter:on */
-        log.info("transaction : {}", result.getResponse().getContentAsString());
-
-        /* @formatter:off */
-        result = mock.perform(MockMvcRequestBuilders.get("/sign/find").headers(headers)
-                                                                      .contentType(MediaType.APPLICATION_JSON)
-                                                                      .accept(MediaType.APPLICATION_JSON))
+        
+        // 상태 조회 테스트 : 다른 사용자가 뿌리기 조회시 에러 발생, 사용자 아이디 : user-1
+        userId = "user-1";
+        result = mock.perform(MockMvcRequestBuilders.get("/transaction").headers(getHttpHeader(userId, roomId))
+                                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                                        .accept(MediaType.APPLICATION_JSON)
+                                                                        .param("token", token))
                                                     .andDo(print())
-                                                    .andExpect(status().isOk())
+                                                    .andExpect(status().isForbidden())
+                                                    .andReturn();
+        
+        // 받기 테스트 : 11분 후 받기 시도시 잘못된 요청 에러 발생, 사용자 아이디 : user-2
+        //Thread.sleep(61*1000*2);
+        Thread.sleep(60*1000*10+60*1000);
+        userId = "user-2";
+        result = mock.perform(MockMvcRequestBuilders.put("/transaction/"+token).headers(getHttpHeader(userId, roomId))
+                                                                               .contentType(MediaType.APPLICATION_JSON)
+                                                                               .accept(MediaType.APPLICATION_JSON))
+                                                    .andDo(print())
+                                                    .andExpect(status().isBadRequest())
                                                     .andReturn();
         /* @formatter:on */
-        log.info("after login user : {}", result.getResponse().getContentAsString());
+        log.info("transaction : {}", result.getResponse().getContentAsString());
     }
 
-    /**
-     * 사용자 인증 테스트
-     */
-    private void login(String userId, String password) throws Exception {
-
-        /* @formatter:off */
-        MvcResult result = mock.perform(MockMvcRequestBuilders.post("/sign").header(HttpHeaders.AUTHORIZATION, AccessTokenIssuer.HEADER_PREFIX + accessToken)
-                                                                            .contentType(MediaType.APPLICATION_JSON)
-                                                                            .accept(MediaType.APPLICATION_JSON)
-                                                                            .param("userId", userId)
-                                                                            .param("password", password))
-                                                              .andDo(print())
-                                                              .andExpect(status().isOk())
-                                                              .andReturn();
-        /* @formatter:on */
-        AccessToken token = toAccessToken(result.getResponse().getContentAsString());
-        log.info("accessToken : {}", token);
-        this.accessToken = token.getToken();
+    private HttpHeaders getHttpHeader(String userId, UUID roomId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-USER-ID", userId);
+        if (roomId != null) {
+            headers.add("X-ROOM-ID", roomId.toString());
+        }
+        return headers;
     }
 }

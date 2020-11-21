@@ -13,11 +13,12 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.myassign.exception.AccessTokenEmptyException;
-import com.myassign.exception.AccessTokenInvalidException;
+import com.myassign.exception.RoomNotExistException;
 import com.myassign.exception.ServiceException;
+import com.myassign.exception.TransactionExpiredException;
+import com.myassign.exception.TransactionNotFoundException;
+import com.myassign.exception.TransactionPermissionException;
 import com.myassign.exception.UserNotFoundException;
-import com.myassign.exception.UserPasswordWrongException;
 import com.myassign.model.ApiError;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,23 +44,28 @@ public class ApiExceptionAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, null, null, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
-    @ExceptionHandler(UserPasswordWrongException.class)
-    public ResponseEntity<Object> passwordWrong(HttpServletResponse response, UserPasswordWrongException ex, WebRequest request) throws IOException {
-        return handleExceptionInternal(ex, null, null, HttpStatus.FORBIDDEN, request);
+    @ExceptionHandler(RoomNotExistException.class)
+    public ResponseEntity<Object> roomNotExistException(HttpServletResponse response, RoomNotExistException ex, WebRequest request) throws IOException {
+        return handleExceptionInternal(ex, null, null, HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(AccessTokenInvalidException.class)
-    public ResponseEntity<Object> accessTokenInvalid(HttpServletResponse response, AccessTokenInvalidException ex, WebRequest request) throws IOException {
-        return handleExceptionInternal(ex, null, null, HttpStatus.UNAUTHORIZED, request);
-    }
-
-    @ExceptionHandler(AccessTokenEmptyException.class)
-    public ResponseEntity<Object> accessTokenEmpty(HttpServletResponse response, AccessTokenEmptyException ex, WebRequest request) throws IOException {
-        return handleExceptionInternal(ex, null, null, HttpStatus.UNAUTHORIZED, request);
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<Object> transactionNotFound(HttpServletResponse response, TransactionNotFoundException ex, WebRequest request) throws IOException {
+        return handleExceptionInternal(ex, null, null, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<Object> tokenExpiredException(HttpServletResponse response, TokenExpiredException ex, WebRequest request) throws IOException {
-        return handleExceptionInternal(ex, null, null, HttpStatus.UNAUTHORIZED, request);
+        return handleExceptionInternal(ex, null, null, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(TransactionPermissionException.class)
+    public ResponseEntity<Object> transactionPermissionException(HttpServletResponse response, TransactionPermissionException ex, WebRequest request) throws IOException {
+        return handleExceptionInternal(ex, null, null, HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(TransactionExpiredException.class)
+    public ResponseEntity<Object> transactionExpiredException(HttpServletResponse response, TransactionExpiredException ex, WebRequest request) throws IOException {
+        return handleExceptionInternal(ex, null, null, HttpStatus.BAD_REQUEST, request);
     }
 }

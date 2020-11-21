@@ -1,6 +1,7 @@
 package com.myassign.model.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +14,13 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionResultDto {
+public class TransactionStatusDto {
 
-    private String token;
+    private Date sprayDate;
 
-    private Long price;
+    private Long sprayPrice;
 
-    private Date receiveDate;
+    private Long receiveFinishPrice;
+
+    private List<TransactionReceiveUserDto> receiverUsers;
 }
