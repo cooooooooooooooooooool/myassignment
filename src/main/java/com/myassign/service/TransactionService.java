@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Minutes;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,9 @@ public class TransactionService {
     private final TransactionUserRepository transactionUserRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+
+    @Value("${application.spray.expire.minute}")
+    private int sprayExpireTime;
 
     /**
      * 뿌리기 처리
@@ -107,9 +111,7 @@ public class TransactionService {
                                   .orElseThrow(() -> new UserNotFoundException(userId));
 
         Transaction transaction = transactionRepository.findByRoomAndToken(room, token)
-                                                       .orElseThrow(() -> {
-                                                           throw new TransactionNotFoundException(roomId, token);
-                                                       });
+                                                       .orElseThrow(() -> new TransactionNotFoundException(roomId, token));
         /* @formatter:on */
 
         if (transaction.getSpreadUser().getId().equals(userId)) {
@@ -119,7 +121,7 @@ public class TransactionService {
         int diff = Minutes.minutesBetween(new DateTime(transaction.getCreateDate().getTime()), DateTime.now()).getMinutes();
 
         // 뿌리기 이후 10분이 경과한 경우 받기 불가 처리
-        if (diff > 10) {
+        if (diff > sprayExpireTime) {
             log.info("Request transaction is expired. 10 minutes, roomId : {}, token : {}", roomId, token);
             throw new TransactionExpiredException(token, roomId);
         }
@@ -163,9 +165,7 @@ public class TransactionService {
                                   .orElseThrow(() -> new RoomNotExistException(roomId));
 
         Transaction transaction = transactionRepository.findByRoomAndToken(room, token)
-                                                       .orElseThrow(() -> {
-                                                           throw new TransactionNotFoundException(roomId, token);
-                                                       });
+                                                       .orElseThrow(() -> new TransactionNotFoundException(roomId, token));
         /* @formatter:on */
 
         if (!transaction.getSpreadUser().getId().equals(userId)) {

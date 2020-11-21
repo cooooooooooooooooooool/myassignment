@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class RestApiTest {
      * 뿌리기 테스트
      */
     @Test
+    @Ignore
     public void sprayTest() {
 
         String userId = "user-0";
@@ -73,6 +75,7 @@ public class RestApiTest {
      * 받기 테스트
      */
     @Test
+    @Ignore
     public void receiveTest() {
 
         String userId = "user-1";
@@ -99,6 +102,7 @@ public class RestApiTest {
      * 상태 조회 테스트
      */
     @Test
+    @Ignore
     public void statusTest() {
 
         String userId = "user-0";

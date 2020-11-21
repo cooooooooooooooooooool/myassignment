@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = "spring.config.location=classpath:/application-test.yml", webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MockRestApiTest {
 
     private UUID roomId;
@@ -125,9 +125,8 @@ public class MockRestApiTest {
                                                     .andExpect(status().isForbidden())
                                                     .andReturn();
         
-        // 받기 테스트 : 11분 후 받기 시도시 잘못된 요청 에러 발생, 사용자 아이디 : user-2
-        //Thread.sleep(61*1000*2);
-        Thread.sleep(60*1000*10+60*1000);
+        // 받기 테스트 : 2분(테스트환경) 후 받기 시도시 잘못된 요청 에러 발생, 사용자 아이디 : user-2
+        Thread.sleep(60*1000*2);
         userId = "user-2";
         result = mock.perform(MockMvcRequestBuilders.put("/transaction/"+token).headers(getHttpHeader(userId, roomId))
                                                                                .contentType(MediaType.APPLICATION_JSON)

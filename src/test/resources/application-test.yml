@@ -23,4 +23,4 @@ spring:
       properties.hibernate.globally_quoted_identifiers: true
 
 application:
-   spray.expire.minute: 10
+   spray.expire.minute: 1
