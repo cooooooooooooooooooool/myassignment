@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.myassign.model.dto.AccessToken;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,16 +53,6 @@ public class MockRestApiTest {
             final ObjectMapper mapper = new ObjectMapper();
             final String jsonContent = mapper.writeValueAsString(obj);
             return jsonContent;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static AccessToken toAccessToken(final String contents) {
-        try {
-            final ObjectMapper mapper = new ObjectMapper();
-            final AccessToken object = mapper.readValue(contents, AccessToken.class);
-            return object;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
