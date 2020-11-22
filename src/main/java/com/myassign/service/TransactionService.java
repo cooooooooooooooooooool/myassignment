@@ -1,5 +1,8 @@
 package com.myassign.service;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +54,7 @@ public class TransactionService {
      * 뿌리기 처리
      */
     @Transactional
-    public String sprayPrice(String userId, UUID roomId, int totalPrice, int userCount) {
+    public String sprayPrice(String userId, UUID roomId, int totalPrice, int userCount) throws UnsupportedEncodingException {
 
         log.info("userId : {}", userId);
 
@@ -92,14 +95,14 @@ public class TransactionService {
         user.setBalance(user.getBalance() - Long.valueOf(totalPrice));
         userRepository.save(user);
 
-        return transaction.getToken();
+        return Base64.getEncoder().encodeToString(transaction.getToken().getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * 받기
      */
     @Transactional
-    public TransactionResultDto receivePrice(String userId, UUID roomId, String token) {
+    public TransactionResultDto receivePrice(String userId, UUID roomId, String token) throws UnsupportedEncodingException {
 
         log.info("receive userId : {}", userId);
 
@@ -146,7 +149,7 @@ public class TransactionService {
 
         /* @formatter:off */
         TransactionResultDto result = TransactionResultDto.builder()
-                                                          .token(token)
+                                                          .token(Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8)))
                                                           .price(price)
                                                           .receiveDate(transactionUser.getReceiveDate())
                                                           .build();
@@ -173,9 +176,6 @@ public class TransactionService {
         }
 
         int diff = Days.daysBetween(new DateTime(transaction.getCreateDate().getTime()), DateTime.now()).getDays();
-        // int diff = Minutes.minutesBetween(new
-        // DateTime(transaction.getCreateDate().getTime()),
-        // DateTime.now()).getMinutes();
 
         // 만 7일이 지난 뿌리기는 조회 불가, 여기에서는 1분
         if (diff > 7) {

@@ -126,6 +126,7 @@ public class MockRestApiTest {
                                                     .andReturn();
         
         // 받기 테스트 : 2분(테스트환경) 후 받기 시도시 잘못된 요청 에러 발생, 사용자 아이디 : user-2
+
         Thread.sleep(60*1000*2);
         userId = "user-2";
         result = mock.perform(MockMvcRequestBuilders.put("/transaction/"+token).headers(getHttpHeader(userId, roomId))

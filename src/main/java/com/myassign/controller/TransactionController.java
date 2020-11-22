@@ -1,5 +1,7 @@
 package com.myassign.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,17 +28,23 @@ public class TransactionController {
 
     /**
      * 뿌리기 처리 후 토큰 반환
+     * 
+     * @throws UnsupportedEncodingException
      */
     @PostMapping
-    public String spray(@RequestHeader("X-USER-ID") String userId, @RequestHeader("X-ROOM-ID") UUID roomId, @RequestParam int totalPrice, @RequestParam int userCount) {
+    public String spray(@RequestHeader("X-USER-ID") String userId, @RequestHeader("X-ROOM-ID") UUID roomId, @RequestParam int totalPrice, @RequestParam int userCount) throws UnsupportedEncodingException {
         return transactionService.sprayPrice(userId, roomId, totalPrice, userCount);
     }
 
     /**
      * 받기
+     * 
+     * @throws UnsupportedEncodingException
      */
     @PutMapping("/{token}")
-    public TransactionResultDto receive(@RequestHeader("X-USER-ID") String userId, @RequestHeader("X-ROOM-ID") UUID roomId, @PathVariable("token") String token) {
+    public TransactionResultDto receive(@RequestHeader("X-USER-ID") String userId, @RequestHeader("X-ROOM-ID") UUID roomId, @PathVariable("token") String token) throws UnsupportedEncodingException {
+        // base64 디코딩
+        token = new String(Base64.getDecoder().decode(token));
         return transactionService.receivePrice(userId, roomId, token);
     }
 
@@ -45,6 +53,8 @@ public class TransactionController {
      */
     @GetMapping
     public TransactionStatusDto getTransactionStatus(@RequestHeader("X-USER-ID") String userId, @RequestHeader("X-ROOM-ID") UUID roomId, @RequestParam String token) {
+        // base64 디코딩
+        token = new String(Base64.getDecoder().decode(token));
         return transactionService.getTransactionStatus(userId, roomId, token);
     }
 }

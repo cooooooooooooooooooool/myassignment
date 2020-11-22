@@ -26,6 +26,7 @@ import com.myassign.model.dto.TransactionStatusDto;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Ignore
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class RestApiTest {
@@ -46,7 +47,6 @@ public class RestApiTest {
      * 뿌리기 테스트
      */
     @Test
-    @Ignore
     public void sprayTest() {
 
         String userId = "user-0";
@@ -75,7 +75,6 @@ public class RestApiTest {
      * 받기 테스트
      */
     @Test
-    @Ignore
     public void receiveTest() {
 
         String userId = "user-1";
@@ -102,7 +101,6 @@ public class RestApiTest {
      * 상태 조회 테스트
      */
     @Test
-    @Ignore
     public void statusTest() {
 
         String userId = "user-0";
