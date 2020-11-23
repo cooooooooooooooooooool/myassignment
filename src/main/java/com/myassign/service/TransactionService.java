@@ -83,7 +83,7 @@ public class TransactionService {
             /* @formatter:off */
             TransactionUser transactionUser = TransactionUser.builder()
                                                              .order(i)
-                                                             .price(i==0 ? Long.valueOf(userPrice + (totalPrice % userCount)) : Long.valueOf(userPrice))
+                                                             .price(i==0 ? Long.valueOf(userPrice + (long) (totalPrice % userCount)) : Long.valueOf(userPrice))
                                                              .transaction(transaction)
                                                              .createDate(new Date())
                                                              .build();
@@ -148,14 +148,12 @@ public class TransactionService {
         userRepository.save(user);
 
         /* @formatter:off */
-        TransactionResultDto result = TransactionResultDto.builder()
-                                                          .token(Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8)))
-                                                          .price(price)
-                                                          .receiveDate(transactionUser.getReceiveDate())
-                                                          .build();
+        return TransactionResultDto.builder()
+                                   .token(Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8)))
+                                   .price(price)
+                                   .receiveDate(transactionUser.getReceiveDate())
+                                   .build();
         /* @formatter:on */
-
-        return result;
     }
 
     /**
@@ -189,20 +187,16 @@ public class TransactionService {
         /* @formatter:off */
         List<TransactionReceiveUserDto> receiverUsers = list.stream()
                                                             .filter(x -> StringUtils.isNotEmpty(x.getReceiveUserId()))
-                                                            .map(e -> {
-                                                                return TransactionReceiveUserDto.builder().price(e.getPrice()).userId(e.getReceiveUserId()).build();
-                                                            })
+                                                            .map(e -> (TransactionReceiveUserDto.builder().price(e.getPrice()).userId(e.getReceiveUserId()).build()))
                                                             .collect(Collectors.toList());
         
         
-        TransactionStatusDto dto = TransactionStatusDto.builder()
-                                                       .receiveFinishPrice(transaction.getCurrentReceivePrice())
-                                                       .sprayDate(transaction.getCreateDate())
-                                                       .sprayPrice(transaction.getTotalPrice())
-                                                       .receiverUsers(receiverUsers)
-                                                       .build();
+        return TransactionStatusDto.builder()
+                                   .receiveFinishPrice(transaction.getCurrentReceivePrice())
+                                   .sprayDate(transaction.getCreateDate())
+                                   .sprayPrice(transaction.getTotalPrice())
+                                   .receiverUsers(receiverUsers)
+                                   .build();
         /* @formatter:on */
-
-        return dto;
     }
 }

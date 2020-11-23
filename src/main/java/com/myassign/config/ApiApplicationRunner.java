@@ -48,9 +48,7 @@ public class ApiApplicationRunner implements ApplicationRunner {
         Room room = roomService.createRoom("my chatting room");
 
         if (!list.isEmpty()) {
-            list.forEach(user -> {
-                roomService.joinRoomUser(room.getId(), user.getId());
-            });
+            list.forEach(user -> roomService.joinRoomUser(room.getId(), user.getId()));
         }
     }
 }
